@@ -1,7 +1,9 @@
 import { ReCaptchaSubmit } from './modules/ReCaptchaSubmit';
 
 document.addEventListener('DOMContentLoaded', () => {
-  const recaptchaForm = document.querySelectorAll('form') as NodeListOf<HTMLFormElement>;
+  const recaptchaForm = document.querySelector(
+    'form.formhandler'
+  ) as HTMLFormElement;
   if (null !== recaptchaForm) {
     new ReCaptchaSubmit(recaptchaForm);
   }

@@ -1,38 +1,32 @@
 import { load } from 'recaptcha-v3';
 
 export class ReCaptchaSubmit {
-  private containerList: NodeListOf<HTMLFormElement>;
+  private container: HTMLFormElement;
+  private captchaInput: HTMLInputElement;
   private siteKey: string;
 
-  constructor(container: NodeListOf<HTMLFormElement>) {
-    this.containerList = container;
-    this.siteKey = '';
+  constructor(container: HTMLFormElement) {
+    this.container = container;
+    this.captchaInput = this.container.querySelector(
+      '#ReCaptchaField'
+    ) as HTMLInputElement;
+    this.siteKey = String(this.captchaInput.dataset.sitekey);
 
-    this.containerList.forEach((container) => {
-      this.siteKey = String(
-        (<HTMLInputElement>container.querySelector('#ReCaptchaField'))?.dataset.sitekey
-      );
-
-      if (!this.siteKey) {
-        return;
-      }
-
-      container.addEventListener('submit', this.handler, { once: true });
-    });
+    this.container
+      .querySelector('[type="submit"]')
+      ?.addEventListener('click', (e) => this.handleClick(e));
   }
 
-  private handler = (e: Event) => {
+  private handleClick(e: Event) {
     console.log('triggered!');
     e.preventDefault();
-    const target = e.target as HTMLFormElement;
-    const captchaField = target.querySelector('#ReCaptchaField') as HTMLInputElement;
-
     load(this.siteKey).then((recaptcha) => {
       recaptcha.execute('submit').then((token) => {
-        captchaField.value = token;
+        console.log(token);
+        this.captchaInput.value = token;
 
-        target.submit();
+        this.container.submit();
       });
     });
-  };
+  }
 }
