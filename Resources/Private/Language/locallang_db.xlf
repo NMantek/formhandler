@@ -85,6 +85,12 @@
       <trans-unit id="tx_formhandler_log.is_spam" resname="tx_formhandler_log.is_spam">
         <source>Considered as SPAM</source>
       </trans-unit>
+      <trans-unit id="configuration.captcha.sitekey" resname="configuration.captcha.sitekey">
+        <source>ReCaptcha sitekey</source>
+      </trans-unit>
+      <trans-unit id="configuration.captcha.privkey" resname="configuration.captcha.privkey">
+        <source>ReCaptcha privatekey</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

@@ -112,6 +112,14 @@
         <source>Considered as SPAM</source>
         <target>Als SPAM erkannt</target>
       </trans-unit>
+      <trans-unit id="configuration.captcha.sitekey" resname="configuration.captcha.sitekey">
+        <source>ReCaptcha sitekey</source>
+        <target>Recaptcha Websitenschlüssel</target>
+      </trans-unit>
+      <trans-unit id="configuration.captcha.privkey" resname="configuration.captcha.privkey">
+        <source>ReCaptcha privatekey</source>
+        <target>Recaptcha Geheimschlüssel</target>
+      </trans-unit>
     </body>
   </file>
 </xliff>
