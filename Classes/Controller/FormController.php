@@ -18,6 +18,7 @@ use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Http\Response;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
+use TYPO3\CMS\Extbase\Mvc\Web\Routing\UriBuilder;
 use Typoheads\Formhandler\Definitions\FormhandlerExtensionConfig;
 use Typoheads\Formhandler\Definitions\Severity;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
@@ -349,6 +350,12 @@ class FormController extends ActionController {
     );
 
     $this->formConfig->site = $this->request->getAttribute('site');
+    $this->formConfig->formUrl = GeneralUtility::makeInstance(UriBuilder::class)
+      ->reset()
+      ->setTargetPageUid(
+        intval($this->request->getAttribute('currentContentObject')?->getFieldVal('pid') ?? 0),
+      )->build()
+    ;
     $this->parsedBody = (array) $this->request->getParsedBody();
     $queryParams = (array) $this->request->getQueryParams();
 
