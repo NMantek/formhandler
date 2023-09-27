@@ -656,7 +656,7 @@ class FormController extends ActionController {
     );
 
     // TODO: Add check if step number is valid
-    if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY])) {
+    if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY] ?? false)) {
       $this->formConfig->step = intval($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY]['step'] ?? 1);
     }
     $this->formConfig->session->set('step', $this->formConfig->step);
@@ -726,7 +726,7 @@ class FormController extends ActionController {
    * Removes files from the internal file storage.
    */
   private function processFileRemoval(): ?RedirectResponse {
-    if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY])) {
+    if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY] ?? false)) {
       $removeFile = strval($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY]['removeFile'] ?? '');
       $removeFileField = strval($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY]['removeFileField'] ?? '');
 
