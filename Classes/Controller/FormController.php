@@ -436,9 +436,18 @@ class FormController extends ActionController {
         }
       }
 
-      return new RedirectResponse(
-        '#'.$this->formConfig->formId
-      );
+      if ('json' == $this->formConfig->responseType) {
+        $this->jsonResponse->fieldsErrors = $this->formConfig->fieldsErrors;
+        $this->jsonResponse->fieldSets = $this->formConfig->fieldSets;
+        $this->jsonResponse->formErrors = $this->formConfig->formErrors;
+        $this->jsonResponse->formValues = $this->formConfig->formValues;
+    
+        return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+      } else {
+        return new RedirectResponse(
+          '#'.$this->formConfig->formId
+        );
+      }
     }
 
     $this->prepareFormSets();
