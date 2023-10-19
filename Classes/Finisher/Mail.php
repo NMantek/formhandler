@@ -376,18 +376,21 @@ class Mail extends AbstractFinisher {
     $cids = [];
     if (isset($settings['embedFiles.']) && is_array($settings['embedFiles.'])) {
       foreach ($settings['embedFiles.'] as $key => $embedFileSettings) {
-        if (false === strpos($key, '.')) {
-          $embedFile = $this->utilityFuncs->getSingle($settings['embedFiles.'], $key);
-          if (strlen($embedFile) > 0) {
-            if (!strstr($embedFile, $this->utilityFuncs->getDocumentRoot())) {
-              $embedFile = $this->utilityFuncs->getDocumentRoot().'/'.$embedFile;
-            }
-            $embedFile = $this->utilityFuncs->sanitizePath($embedFile);
-            $cids[$key] = $this->emailObj->embed($embedFile);
-          } else {
-            $this->utilityFuncs->debugMessage('attachment_not_found', [$embedFile], 2);
+        $key = rtrim($key, '.');
+        $embedFile = $this->utilityFuncs->getSingle($embedFileSettings, 'file');
+        $fileMime = $this->utilityFuncs->getSingle($embedFileSettings, 'mime');
+
+        if (!empty($embedFile)) {
+          if (!strstr($embedFile, $this->utilityFuncs->getDocumentRoot())) {
+            $embedFile = $this->utilityFuncs->getDocumentRoot().'/'.$embedFile;
           }
+          $embedFile = $this->utilityFuncs->sanitizePath($embedFile);
+
+          $this->emailObj->embed($embedFile, $key, !empty($fileMime) ? $fileMime : null);
+          $cids[$key] = "cid:{$key}";
         }
+
+        $this->utilityFuncs->debugMessage('attachment_not_found', [$embedFile], 2);
       }
     }
 
