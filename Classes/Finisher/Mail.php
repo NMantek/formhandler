@@ -388,9 +388,9 @@ class Mail extends AbstractFinisher {
 
           $this->emailObj->embed($embedFile, $key, !empty($fileMime) ? $fileMime : null);
           $cids[$key] = "cid:{$key}";
+        } else {
+          $this->utilityFuncs->debugMessage('attachment_not_found', [$embedFile], 2);
         }
-
-        $this->utilityFuncs->debugMessage('attachment_not_found', [$embedFile], 2);
       }
     }
 
