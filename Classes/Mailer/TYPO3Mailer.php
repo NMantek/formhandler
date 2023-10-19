@@ -41,11 +41,6 @@ class TYPO3Mailer extends AbstractMailer implements MailerInterface {
     $this->emailObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailMessage::class);
   }
 
-  public function init(array $gp, array $settings): void {
-    parent::init($gp, $settings);
-    $this->emailObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailMessage::class);
-  }
-
   /* (non-PHPdoc)
    * @see Classes/Mailer/Tx_FormhandlerMailerInterface#addAttachment()
   */
@@ -78,8 +73,8 @@ class TYPO3Mailer extends AbstractMailer implements MailerInterface {
     // TODO: Find a good way to make headers configurable
   }
 
-  public function embed(string $image): \Symfony\Component\Mime\Email {
-    return $this->emailObj->embedFromPath($image);
+  public function embed(string $image, ?string $name = null, ?string $mime = null): \Symfony\Component\Mime\Email {
+    return $this->emailObj->embedFromPath($image, $name, $mime);
   }
 
   /* (non-PHPdoc)
@@ -152,6 +147,11 @@ class TYPO3Mailer extends AbstractMailer implements MailerInterface {
   */
   public function getSubject(): string {
     return $this->emailObj->getSubject() ?? '';
+  }
+
+  public function init(array $gp, array $settings): void {
+    parent::init($gp, $settings);
+    $this->emailObj = \TYPO3\CMS\Core\Utility\GeneralUtility::makeInstance(MailMessage::class);
   }
 
   /* (non-PHPdoc)
