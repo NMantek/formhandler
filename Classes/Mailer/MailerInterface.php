@@ -55,7 +55,7 @@ interface MailerInterface {
    *
    * @param string $image The image path
    */
-  public function embed(string $image): Email;
+  public function embed(string $image, ?string $name = null, ?string $mime = null): Email;
 
   /**
    * Returns the BCC recipients of the email.
