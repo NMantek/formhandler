@@ -3,6 +3,8 @@
 *.iml
 *.ipr
 *.iws
+/.ter/*
+!/.ter/ter-prepare.sh
 /vendor
 /public
 /node_modules
