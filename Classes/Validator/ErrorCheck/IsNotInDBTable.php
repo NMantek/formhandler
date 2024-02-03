@@ -17,7 +17,6 @@ namespace Typoheads\Formhandler\Validator\ErrorCheck;
  * Public License for more details.
  */
 
-use Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\QueryHelper;
 use TYPO3\CMS\Core\Database\Query\Restriction\FrontendRestrictionContainer;
@@ -63,7 +62,7 @@ class IsNotInDBTable extends AbstractErrorCheck {
           if ($stmt->rowCount() > 0) {
             $checkFailed = $this->getCheckFailed();
           }
-        } catch (Exception $th) {
+        } catch (\Exception $th) {
           $this->utilityFuncs->debugMessage('error', [$th->getMessage()], 3);
         }
       }

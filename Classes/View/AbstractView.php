@@ -28,7 +28,6 @@ use Typoheads\Formhandler\Utility\Globals;
  * An abstract view for Formhandler.
  */
 abstract class AbstractView extends AbstractPlugin {
-
   /**
    * The Formhandler component manager.
    */
@@ -197,8 +196,7 @@ abstract class AbstractView extends AbstractPlugin {
    *
    * @author Jochen Rau
    */
-  protected function initializeView(): void {
-  }
+  protected function initializeView(): void {}
 
   /**
    * Sanitizes GET/POST parameters by processing the 'checkBinaryCrLf' setting in TypoScript.

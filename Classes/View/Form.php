@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\View;
 
+use ReCaptcha\ReCaptcha;
 use SJBR\SrFreecap\PiBaseApi;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
@@ -409,7 +410,7 @@ class Form extends AbstractView {
       }
       $content .= '<span '.$class.' >'.$stepName.'</span>';
     }
-    $content = '<span class="'.$classprefix.'_steps'.'">'.$content.'</span>';
+    $content = '<span class="'.$classprefix.'_steps">'.$content.'</span>';
 
     // if not the first step, show back button
     if ($currentStep > 1) {
@@ -457,7 +458,7 @@ class Form extends AbstractView {
 
       $markers = array_merge($markers, GeneralUtility::makeInstance(PiBaseApi::class)->makeCaptcha());
     }
-    if (stristr($this->template, '###recaptcha###') && class_exists(\ReCaptcha\ReCaptcha::class)) {
+    if (stristr($this->template, '###recaptcha###') && class_exists(ReCaptcha::class)) {
       $recaptchaUtil = GeneralUtility::makeInstance(CaptchaUtility::class);
       $markers['###RECAPTCHA###'] = $recaptchaUtil->makeReCaptcha($this->globals->getFormValuesPrefix());
       $markers['###recaptcha###'] = $markers['###RECAPTCHA###'];

@@ -73,7 +73,7 @@ class Validate extends AbstractAjax {
       if ($valid) {
         $content = $this->utilityFuncs->getSingle($ajaxConfig, 'ok');
         if (0 === strlen($content)) {
-          $content = '<img src="'.PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('formhandler')).'Resources/Public/Images/ok.png'.'" />';
+          $content = '<img src="'.PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('formhandler')).'Resources/Public/Images/ok.png" />';
         } else {
           $gp[strval($_GET['field'])] = $_GET['value'] ?? '';
           $view = $this->initView($content);
@@ -83,7 +83,7 @@ class Validate extends AbstractAjax {
       } else {
         $content = $this->utilityFuncs->getSingle($ajaxConfig, 'notOk');
         if (0 === strlen($content)) {
-          $content = '<img src="'.PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('formhandler')).'Resources/Public/Images/notok.png'.'" />';
+          $content = '<img src="'.PathUtility::getAbsoluteWebPath(ExtensionManagementUtility::extPath('formhandler')).'Resources/Public/Images/notok.png" />';
         } else {
           $view = $this->initView($content);
           $gp[strval($_GET['field'])] = $_GET['value'] ?? '';

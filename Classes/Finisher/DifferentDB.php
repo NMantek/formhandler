@@ -37,7 +37,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  *
  * Further configuration equals the configuration of Finisher\DB.
  *
- * @see \Typoheads\Formhandler\Finisher\DB
+ * @see DB
  */
 class DifferentDB extends DB {
   /**

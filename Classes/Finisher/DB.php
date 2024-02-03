@@ -334,6 +334,7 @@ class DB extends AbstractFinisher {
     $queryFields = [];
 
     $fields = (array) ($this->settings['fields.'] ?? []);
+
     // parse mapping
     /** @var string $fieldname */
     foreach ($fields as $fieldname => $options) {

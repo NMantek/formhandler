@@ -129,8 +129,6 @@ class Demand {
 
   /**
    * Set manual date start.
-   *
-   * @param \DateTime $manualDateStart
    */
   public function setManualDateStart(\DateTime $manualDateStart = null): void {
     $this->manualDateStart = $manualDateStart;
@@ -138,8 +136,6 @@ class Demand {
 
   /**
    * Set manual date stop.
-   *
-   * @param \DateTime $manualDateStop
    */
   public function setManualDateStop(\DateTime $manualDateStop = null): void {
     $this->manualDateStop = $manualDateStop;

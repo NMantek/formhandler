@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Validator\ErrorCheck;
 
 use ReCaptcha\ReCaptcha as GoogleRecaptcha;
+use ReCaptcha\Response;
 use TYPO3\CMS\Core\Configuration\ExtensionConfiguration;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -18,7 +19,7 @@ class ReCaptcha extends AbstractErrorCheck {
   private float $scoreThreshold = 0.6;
 
   public function check(): string {
-    if (!class_exists(\ReCaptcha\ReCaptcha::class) || !class_exists(\ReCaptcha\Response::class)) {
+    if (!class_exists(GoogleRecaptcha::class) || !class_exists(Response::class)) {
       return $this->getCheckFailed();
     }
 

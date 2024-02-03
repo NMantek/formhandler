@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Mailer;
 
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 use TYPO3\CMS\Core\Mail\MailMessage;
 use Typoheads\Formhandler\Component\Manager;
 use Typoheads\Formhandler\Controller\Configuration;
@@ -73,7 +75,7 @@ class TYPO3Mailer extends AbstractMailer implements MailerInterface {
     // TODO: Find a good way to make headers configurable
   }
 
-  public function embed(string $image, ?string $name = null, ?string $mime = null): \Symfony\Component\Mime\Email {
+  public function embed(string $image, ?string $name = null, ?string $mime = null): Email {
     return $this->emailObj->embedFromPath($image, $name, $mime);
   }
 
@@ -131,7 +133,7 @@ class TYPO3Mailer extends AbstractMailer implements MailerInterface {
   /* (non-PHPdoc)
    * @see Classes/Mailer/Tx_FormhandlerMailerInterface#getReturnPath()
   */
-  public function getReturnPath(): ?\Symfony\Component\Mime\Address {
+  public function getReturnPath(): ?Address {
     return $this->emailObj->getReturnPath();
   }
 

@@ -40,9 +40,7 @@ class Globals implements SingletonInterface {
 
   protected static string $formValuesPrefix = '';
 
-  protected static string $prefixId = '';
-
-    /** @var array<string, mixed> */
+  /** @var array<string, mixed> */
   protected static array $gp = [];
 
   /** @var string[] */
@@ -52,6 +50,8 @@ class Globals implements SingletonInterface {
   protected static array $overrideSettings = [];
 
   protected static string $predef = '';
+
+  protected static string $prefixId = '';
 
   protected static string $randomID = '';
 
@@ -113,10 +113,6 @@ class Globals implements SingletonInterface {
     return self::$formValuesPrefix;
   }
 
-    public static function getPrefixId(): string {
-        return self::$prefixId;
-    }
-
   /**
    * @return array<string, mixed>
    */
@@ -140,6 +136,10 @@ class Globals implements SingletonInterface {
 
   public static function getPredef(): string {
     return self::$predef;
+  }
+
+  public static function getPrefixId(): string {
+    return self::$prefixId;
   }
 
   public static function getRandomID(): string {
@@ -200,10 +200,6 @@ class Globals implements SingletonInterface {
     self::$formValuesPrefix = $formValuesPrefix;
   }
 
-    public static function setPrefixId(string $prefixId): void {
-        self::$prefixId = $prefixId;
-    }
-
   /**
    * @param array<string, mixed> $gp
    */
@@ -227,6 +223,10 @@ class Globals implements SingletonInterface {
 
   public static function setPredef(string $predef): void {
     self::$predef = $predef;
+  }
+
+  public static function setPrefixId(string $prefixId): void {
+    self::$prefixId = $prefixId;
   }
 
   public static function setRandomID(string $randomID): void {

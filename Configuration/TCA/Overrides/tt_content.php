@@ -1,8 +1,10 @@
 <?php
 
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
+
 defined('TYPO3') or exit;
 
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPlugin(
+ExtensionManagementUtility::addPlugin(
   [
     'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:tt_content.list_type_pi1',
     'formhandler_pi1',
@@ -25,7 +27,7 @@ $GLOBALS['TCA']['tt_content']['types']['formhandler_pi1']['showitem'] = '
 ';
 
 $GLOBALS['TCA']['tt_content']['types']['list']['subtypes_addlist']['formhandler_pi1'] = 'pi_flexform';
-\TYPO3\CMS\Core\Utility\ExtensionManagementUtility::addPiFlexFormValue(
+ExtensionManagementUtility::addPiFlexFormValue(
   '*',
   'FILE:EXT:formhandler/Configuration/FlexForms/flexform_ds.xml',
   'formhandler_pi1'

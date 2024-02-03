@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Controller;
 
-use DOMDocument;
-
 class FormInfo extends Form {
   public function process(): string {
     $this->init();
@@ -34,7 +32,7 @@ class FormInfo extends Form {
 
     $fields = [];
 
-    $document = new DOMDocument();
+    $document = new \DOMDocument();
     $document->loadHTML('<?xml encoding="utf-8" ?>'.$content);
 
     // Find all select boxes

@@ -22,5 +22,4 @@ use Typoheads\Formhandler\Component\AbstractComponent;
 /**
  * Abstract class for loggers.
  */
-abstract class AbstractLogger extends AbstractComponent {
-}
+abstract class AbstractLogger extends AbstractComponent {}

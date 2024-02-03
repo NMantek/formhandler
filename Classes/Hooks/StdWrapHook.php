@@ -31,9 +31,9 @@ class StdWrapHook implements ContentObjectStdWrapHookInterface {
   /**
    * Hook for modifying $content after core's stdWrap has processed setContentToCurrent, setCurrent, lang, data, field, current, cObject, numRows, filelist and/or preUserFunc.
    *
-   * @param string                                                  $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
-   * @param array<string, mixed>                                    $configuration TypoScript stdWrap properties
-   * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject  Parent content object
+   * @param string                $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
+   * @param array<string, mixed>  $configuration TypoScript stdWrap properties
+   * @param ContentObjectRenderer $parentObject  Parent content object
    *
    * @return string Further processed $content
    */
@@ -44,9 +44,9 @@ class StdWrapHook implements ContentObjectStdWrapHookInterface {
   /**
    * Hook for modifying $content after core's stdWrap has processed anything but debug.
    *
-   * @param string                                                  $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
-   * @param array<string, mixed>                                    $configuration TypoScript stdWrap properties
-   * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject  Parent content object
+   * @param string                $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
+   * @param array<string, mixed>  $configuration TypoScript stdWrap properties
+   * @param ContentObjectRenderer $parentObject  Parent content object
    *
    * @return string Further processed $content
    */
@@ -62,9 +62,9 @@ class StdWrapHook implements ContentObjectStdWrapHookInterface {
   /**
    * Hook for modifying $content before core's stdWrap does anything.
    *
-   * @param string                                                  $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
-   * @param array<string, mixed>                                    $configuration TypoScript stdWrap properties
-   * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject  Parent content object
+   * @param string                $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
+   * @param array<string, mixed>  $configuration TypoScript stdWrap properties
+   * @param ContentObjectRenderer $parentObject  Parent content object
    *
    * @return string Further processed $content
    */
@@ -89,9 +89,9 @@ class StdWrapHook implements ContentObjectStdWrapHookInterface {
   /**
    * Hook for modifying $content after core's stdWrap has processed override, preIfEmptyListNum, ifEmpty, ifBlank, listNum, trim and/or more (nested) stdWraps.
    *
-   * @param string                                                  $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
-   * @param array<string, mixed>                                    $configuration typoScript "stdWrap properties"
-   * @param \TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer $parentObject  Parent content object
+   * @param string                $content       Input value undergoing processing in this function. Possibly substituted by other values fetched from another source.
+   * @param array<string, mixed>  $configuration typoScript "stdWrap properties"
+   * @param ContentObjectRenderer $parentObject  Parent content object
    *
    * @return string Further processed $content
    */
