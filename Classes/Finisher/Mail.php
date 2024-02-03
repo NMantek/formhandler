@@ -422,7 +422,7 @@ class Mail extends AbstractFinisher {
         array_push($parsed, $file);
       } elseif (file_exists(strval(GeneralUtility::getIndpEnv('TYPO3_DOCUMENT_ROOT')).'/'.$file)) {
         array_push($parsed, strval(GeneralUtility::getIndpEnv('TYPO3_DOCUMENT_ROOT')).'/'.$file);
-      } elseif (strlen($file) > 0) {
+      } elseif (!empty($file)) {
         $this->utilityFuncs->debugMessage('attachment_not_found', [$file], 2);
       }
     }

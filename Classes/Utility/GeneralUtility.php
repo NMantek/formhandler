@@ -590,9 +590,9 @@ class GeneralUtility implements SingletonInterface {
     $keys = explode('|', $keyString);
     $numberOfLevels = count($keys);
     $rootKey = trim($keys[0]);
-    $value = isset($source[$rootKey]) ? $source[$rootKey] : $GLOBALS[$rootKey] ?? '';
+    $value = $source[$rootKey] ?? $GLOBALS[$rootKey] ?? '';
 
-    for ($i = 1; $i < $numberOfLevels && isset($value); ++$i) {
+    for ($i = 1; $i < $numberOfLevels && !empty($value); ++$i) {
       $currentKey = trim($keys[$i]);
       if (is_object($value)) {
         $value = $value->{$currentKey} ?? '';
@@ -605,7 +605,7 @@ class GeneralUtility implements SingletonInterface {
       }
     }
 
-    if (null === $value) {
+    if (null == $value) {
       $value = '';
     }
 
