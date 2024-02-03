@@ -858,7 +858,7 @@ class Form extends AbstractController {
 
               foreach ($uploadedFiles as $idx => $name) {
                 $exists = false;
-                if (is_array($sessionFiles[$field])) {
+                if (is_array($sessionFiles[$field] ?? false)) {
                   foreach ($sessionFiles[$field] as $fileId => $fileOptions) {
                     if ($fileOptions['name'] === $name) {
                       $exists = true;
@@ -917,7 +917,7 @@ class Form extends AbstractController {
                       array_push($tempFile, $tmp);
                     }
                     $tempFiles[$field] = $tempFile;
-                    if (!is_array($this->gp[$field])) {
+                    if (!is_array($this->gp[$field] ?? false)) {
                       $this->gp[$field] = [];
                     }
                     if (!$exists || 'replace' !== $uploadedFilesWithSameNameAction) {

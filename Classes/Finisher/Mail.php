@@ -297,7 +297,9 @@ class Mail extends AbstractFinisher {
 
           case 'attachPDF':
           case 'attachGeneratedFiles':
-            if (isset($currentSettings['attachGeneratedFiles.']) && is_array($currentSettings['attachGeneratedFiles.'])) {
+            if (is_array($currentSettings['attachGeneratedFiles.'] ?? false)) {
+              $emailSettings['attachGeneratedFiles'] = $emailSettings['attachGeneratedFiles'] ?? '';
+
               foreach ($currentSettings['attachGeneratedFiles.'] as $options) {
                 $generatorClass = $this->utilityFuncs->getPreparedClassName($options);
                 if ($generatorClass) {
@@ -309,7 +311,7 @@ class Mail extends AbstractFinisher {
                   $emailSettings['attachGeneratedFiles'] .= $file.',';
                 }
               }
-              if (isset($emailSettings['attachGeneratedFiles']) && !empty($emailSettings['attachGeneratedFiles']) && ',' === substr(strval($emailSettings['attachGeneratedFiles']), strlen(strval($emailSettings['attachGeneratedFiles'])) - 1)) {
+              if (!empty($emailSettings['attachGeneratedFiles'] ?? '') && ',' === substr(strval($emailSettings['attachGeneratedFiles']), strlen(strval($emailSettings['attachGeneratedFiles'])) - 1)) {
                 $emailSettings['attachGeneratedFiles'] = substr(strval($emailSettings['attachGeneratedFiles']), 0, strlen(strval($emailSettings['attachGeneratedFiles'])) - 1);
               }
               unset($currentSettings['attachGeneratedFiles.']);

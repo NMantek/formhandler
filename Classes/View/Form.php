@@ -146,7 +146,10 @@ class Form extends AbstractView {
       $singleFileMarkerTemplate = (array) ($settings['singleFileMarkerTemplate.'] ?? []);
       $totalFilesMarkerTemplate = (array) ($settings['totalFilesMarkerTemplate.'] ?? []);
 
+      $markers['###total_uploadedFiles###'] = $markers['###total_uploadedFiles###'] ?? '';
+
       foreach ($sessionFiles as $field => $files) {
+        $markers['###'.$field.'_uploadedFiles###'] = $markers['###'.$field.'_uploadedFiles###'] ?? '';
         foreach ($files as $idx => $fileInfo) {
           $filename = $fileInfo['name'];
           $thumb = '';
@@ -192,6 +195,7 @@ class Form extends AbstractView {
           $wrappedFilename = $this->utilityFuncs->wrap($stdWrappedFilename.$link, $singleFileMarkerTemplate, 'singleWrap');
           $wrappedThumb = $this->utilityFuncs->wrap($thumb.$link, $singleFileMarkerTemplate, 'singleWrap');
           $wrappedThumbFilename = $this->utilityFuncs->wrap($thumb.' '.$stdWrappedFilename.$link, $singleFileMarkerTemplate, 'singleWrap');
+
           if (1 === intval($singleFileMarkerTemplate['showThumbnails'] ?? 0)) {
             $markers['###'.$field.'_uploadedFiles###'] .= $wrappedThumb;
           } elseif (2 === intval($singleFileMarkerTemplate['showThumbnails'] ?? 0)) {
@@ -220,10 +224,10 @@ class Form extends AbstractView {
             $markers['###total_uploadedFiles###'] .= $wrappedFilename;
           }
         }
-        $markers['###'.$field.'_uploadedFiles###'] = $this->utilityFuncs->wrap(strval($markers['###'.$field.'_uploadedFiles###'] ?? ''), $singleFileMarkerTemplate, 'totalWrap');
+        $markers['###'.$field.'_uploadedFiles###'] = $this->utilityFuncs->wrap(strval($markers['###'.$field.'_uploadedFiles###']), $singleFileMarkerTemplate, 'totalWrap');
         $markers['###'.$field.'_uploadedFiles###'] = '<div id="Tx_Formhandler_UploadedFiles_'.$field.'">'.$markers['###'.$field.'_uploadedFiles###'].'</div>';
       }
-      $markers['###total_uploadedFiles###'] = $this->utilityFuncs->wrap(strval($markers['###total_uploadedFiles###'] ?? ''), $totalFilesMarkerTemplate, 'totalWrap');
+      $markers['###total_uploadedFiles###'] = $this->utilityFuncs->wrap(strval($markers['###total_uploadedFiles###']), $totalFilesMarkerTemplate, 'totalWrap');
       $markers['###TOTAL_UPLOADEDFILES###'] = $markers['###total_uploadedFiles###'];
       $markers['###total_uploadedfiles###'] = $markers['###total_uploadedFiles###'];
     }
@@ -1264,7 +1268,7 @@ class Form extends AbstractView {
               $maxCount = $fieldSettings['errorCheck.'][$key.'.']['maxCount'];
               $markers['###'.$fieldPathTemp.'_maxCount###'] = $maxCount;
 
-              if (is_array($sessionFiles[$fieldName])) {
+              if (is_array($sessionFiles[$fieldName] ?? false)) {
                 $fileCount = count($sessionFiles[$fieldName]);
               } else {
                 $fileCount = 0;

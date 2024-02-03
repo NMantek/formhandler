@@ -27,11 +27,11 @@ class FileAllowedTypes extends AbstractErrorCheck {
     $checkFailed = '';
     $allowed = $this->utilityFuncs->getSingle((array) ($this->settings['params'] ?? []), 'allowedTypes');
     foreach ($_FILES as $sthg => &$files) {
-      if (!is_array($files['name'][$this->formFieldName])) {
+      if (!is_array($files['name'][$this->formFieldName] ?? false)) {
         $files['name'][$this->formFieldName] = [$files['name'][$this->formFieldName]];
       }
       foreach ($files['name'][$this->formFieldName] as $fileName) {
-        if (strlen($fileName) > 0) {
+        if (strlen(strval($fileName)) > 0) {
           if ($allowed) {
             $types = GeneralUtility::trimExplode(',', $allowed);
             $fileext = substr($fileName, strrpos($fileName, '.') + 1);

@@ -62,7 +62,7 @@ class LoadDefaultValues extends AbstractPreProcessor {
       $step = preg_replace('/\.$/', '', $step);
       if (is_numeric($step)) {
         $step = intval($step);
-        if (1 == $step) {
+        if (1 === $step) {
           $this->loadDefaultValuesToGP($stepSettings);
         } else {
           $this->loadDefaultValuesToSession($stepSettings, $step);
@@ -88,7 +88,7 @@ class LoadDefaultValues extends AbstractPreProcessor {
 
         if (!isset($field['defaultValue'])) {
           $this->setDefaultValues($field, $currentLevelGP[$fieldName]);
-        } elseif (!isset($currentLevelGP[$fieldName])) {
+        } elseif (empty($currentLevelGP[$fieldName] ?? '')) {
           $currentLevelGP[$fieldName] = $this->utilityFuncs->getSingle((array) $field, 'defaultValue');
           if (isset($field['defaultValue.']) && is_array($field['defaultValue.']) && isset($field['defaultValue.']['separator']) && !empty($field['defaultValue.']['separator'])) {
             $separator = $this->utilityFuncs->getSingle($field['defaultValue.'], 'separator');
