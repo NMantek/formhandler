@@ -27,7 +27,7 @@ class FileTypes extends AbstractErrorCheck {
     }
 
     $isValid = true;
-    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] as $file) {
+    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] ?? [] as &$file) {
       foreach ($errorCheckConfig->fileTypesArray as $fileType) {
         if (str_starts_with($file->type, $fileType)) {
           continue 2;

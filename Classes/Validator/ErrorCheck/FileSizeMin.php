@@ -27,7 +27,7 @@ class FileSizeMin extends AbstractErrorCheck {
     }
 
     $isValid = true;
-    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] as $file) {
+    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] ?? [] as &$file) {
       if ($file->size < $errorCheckConfig->fileSizeMin) {
         $isValid = false;
         $file->error = true;

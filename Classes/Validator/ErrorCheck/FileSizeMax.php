@@ -27,7 +27,7 @@ class FileSizeMax extends AbstractErrorCheck {
     }
 
     $isValid = true;
-    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] as $file) {
+    foreach ($formConfig->formUploads->files[$fieldNamePathBrackets] ?? [] as &$file) {
       if ($file->size > $errorCheckConfig->fileSizeMax) {
         $isValid = false;
         $file->error = true;
