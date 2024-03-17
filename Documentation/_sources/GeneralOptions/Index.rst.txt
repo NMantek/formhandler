@@ -23,5 +23,6 @@ General Options
 
    Settings
    PredefinedForm
+   ConditionBlock
    FileUploadSettings
    Step

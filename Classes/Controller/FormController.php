@@ -144,6 +144,7 @@ use Typoheads\Formhandler\Utility\Utility;
  *
  *   Settings
  *   PredefinedForm
+ *   ConditionBlock
  *   FileUploadSettings
  *   Step
  *
@@ -331,8 +332,7 @@ class FormController extends ActionController {
 
   public function __construct(
     protected readonly PageRepository $pageRepository
-  ) {
-  }
+  ) {}
 
   /**
    * Show form.
@@ -356,6 +356,7 @@ class FormController extends ActionController {
         intval($this->request->getAttribute('currentContentObject')?->getFieldVal('pid') ?? 0),
       )->build()
     ;
+
     $this->parsedBody = (array) $this->request->getParsedBody();
     $queryParams = (array) $this->request->getQueryParams();
 
@@ -388,6 +389,8 @@ class FormController extends ActionController {
     }
 
     $this->mergeParsedBodyWithSession();
+
+    $this->parseConditionBlocks();
 
     $this->initInterceptors();
 
@@ -441,13 +444,13 @@ class FormController extends ActionController {
         $this->jsonResponse->fieldSets = $this->formConfig->fieldSets;
         $this->jsonResponse->formErrors = $this->formConfig->formErrors;
         $this->jsonResponse->formValues = $this->formConfig->formValues;
-    
+
         return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
-      } else {
-        return new RedirectResponse(
-          '#'.$this->formConfig->formId
-        );
       }
+
+      return new RedirectResponse(
+        '#'.$this->formConfig->formId
+      );
     }
 
     $this->prepareFormSets();
@@ -674,6 +677,37 @@ class FormController extends ActionController {
       key: 'Step number in Session',
       data: $this->formConfig->step,
     );
+  }
+
+  private function parseConditionBlocks(): void {
+    $utility = GeneralUtility::makeInstance(Utility::class);
+
+    foreach ($this->formConfig->conditionBlocks as $conditionBlock) {
+      $evaluation = $utility->conditionEvaluate($conditionBlock, $this->formConfig);
+      if ($evaluation) {
+        foreach ($conditionBlock->isTrue as $key => $value) {
+          if (empty($value)) {
+            continue;
+          }
+          if ('disableErrorCheckFields' == $key) {
+            foreach (explode(',', $value) ?: [] as $disableErrorCheckField) {
+              $this->formConfig->disableErrorCheckFields[$disableErrorCheckField] = '';
+            }
+          }
+        }
+      } else {
+        foreach ($conditionBlock->else as $key => $value) {
+          if (empty($value)) {
+            continue;
+          }
+          if ('disableErrorCheckFields' == $key) {
+            foreach (explode(',', $value) ?: [] as $disableErrorCheckField) {
+              $this->formConfig->disableErrorCheckFields[$disableErrorCheckField] = '';
+            }
+          }
+        }
+      }
+    }
   }
 
   private function prepareFieldsFileTypesAndRequired(string $fieldNamePath, FieldModel $field): void {

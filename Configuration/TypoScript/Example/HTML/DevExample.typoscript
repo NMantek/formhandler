@@ -65,6 +65,7 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
       model = PrintToScreenDebugger
       config {
         active = true
+        maxDepth = 12
       }
     }
   }
@@ -72,6 +73,24 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
   loggers {
     Database {
       model = DatabaseLogger
+    }
+  }
+
+  conditionBlocks {
+    1 {
+      conditions.OR1.AND1 = 1.customer.postalCode=18055
+      isTrue {
+        disableErrorCheckFields = 1.customer.lastname
+      }
+    }
+    2 {
+      conditions.OR1.AND1 = 1.customer.postalCode=12345
+      isTrue {
+        disableErrorCheckFields = 1.customer.screenshot2
+      }
+      else {
+        disableErrorCheckFields = 
+      }
     }
   }
 

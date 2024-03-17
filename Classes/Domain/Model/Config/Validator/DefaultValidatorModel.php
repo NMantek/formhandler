@@ -139,6 +139,8 @@ use Typoheads\Formhandler\Validator\DefaultValidator;
  *       | If this is set, all configured :ref:`error checks <Error-Checks>` will be ignored, these fields.
  *       |
  *       | Or a list containing the field name path as key and a comma separated list of :ref:`error checks <Error-Checks>` as values.
+ *       |
+ *       | This setting can be altered by :ref:`condition blocks <ConditionBlock>` depending on user input.
  *   * -
  *     -
  *   * - *Mandatory*

@@ -20,6 +20,7 @@ use Typoheads\Formhandler\Definitions\FormhandlerExtensionConfig;
 use Typoheads\Formhandler\Definitions\Severity;
 use Typoheads\Formhandler\Domain\Model\Config\Debugger\AbstractDebuggerModel;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
+use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\ConditionBlockModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\FieldSetModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\FileUploadModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\MailModel;
@@ -63,6 +64,9 @@ use Typoheads\Formhandler\Utility\Utility;
  *      templateForm = DevExample/Default
  *      templateMailHtml = DevExample/MailHtml
  *      templateMailText = DevExample/MailText
+ *
+ *      conditionBlocks {
+ *      }
  *
  *      fileUpload {
  *      }
@@ -250,6 +254,22 @@ use Typoheads\Formhandler\Utility\Utility;
  *   :header-rows: 0
  *   :stub-columns: 0
  *
+ *   * - **conditionBlocks**
+ *     - Settings to handle condition block.
+ *   * -
+ *     -
+ *   * - *Mandatory*
+ *     - False
+ *   * - *Data Type*
+ *     - Array<String, :ref:`ConditionBlock <ConditionBlock>`>
+ *
+ *.. list-table::
+ *   :align: left
+ *   :width: 100%
+ *   :widths: 20 80
+ *   :header-rows: 0
+ *   :stub-columns: 0
+ *
  *   * - **fileUpload**
  *     - Settings to handle file uploads.
  *   * -
@@ -314,6 +334,9 @@ use Typoheads\Formhandler\Utility\Utility;
  */
 class FormModel {
   public MailModel $admin;
+
+  /** @var ConditionBlockModel[] */
+  public array $conditionBlocks;
 
   /** @var array<string, string[]> */
   public array $disableErrorCheckFields = [];
@@ -429,6 +452,13 @@ class FormModel {
 
       // File upload settings
       $this->fileUpload = GeneralUtility::makeInstance(FileUploadModel::class, $settings['predefinedForms'][$this->predefinedForm]['fileUpload'] ?? []);
+
+      // Get form conditionBlocks
+      foreach ($settings['predefinedForms'][$this->predefinedForm]['conditionBlocks'] ?? [] as $conditionBlock) {
+        $conditionBlockModel = GeneralUtility::makeInstance(ConditionBlockModel::class, $conditionBlock);
+
+        $this->conditionBlocks[] = $conditionBlockModel;
+      }
 
       // Get form debugger
       foreach ($settings['predefinedForms'][$this->predefinedForm]['debuggers'] ?? [] as $debugger) {

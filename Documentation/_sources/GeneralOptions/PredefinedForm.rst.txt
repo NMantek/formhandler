@@ -30,6 +30,9 @@ Predefine form settings and make them selectable in plugin record.
       templateMailHtml = DevExample/MailHtml
       templateMailText = DevExample/MailText
 
+      conditionBlocks {
+      }
+
       fileUpload {
       }
 
@@ -208,6 +211,22 @@ Predefine form settings and make them selectable in plugin record.
      - False
    * - *Data Type*
      - String
+
+.. list-table::
+   :align: left
+   :width: 100%
+   :widths: 20 80
+   :header-rows: 0
+   :stub-columns: 0
+
+   * - **conditionBlocks**
+     - Settings to handle condition block.
+   * -
+     -
+   * - *Mandatory*
+     - False
+   * - *Data Type*
+     - Array<String, :ref:`ConditionBlock <ConditionBlock>`>
 
 .. list-table::
    :align: left
