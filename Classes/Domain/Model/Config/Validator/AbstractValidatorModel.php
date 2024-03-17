@@ -57,7 +57,7 @@ abstract class AbstractValidatorModel {
   /**
    * @param array<string, mixed> $settings
    */
-  abstract public function __construct(FormModel &$formConfig, array $settings);
+  abstract public function __construct(FormModel &$formConfig, string $step, array $settings);
 
   /**
    * @return class-string<AbstractValidator>

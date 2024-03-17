@@ -100,10 +100,14 @@ validators <span class="ss">{</span>
     config <span class="ss">{</span>
       messageLimit <span class="o">=</span> <span class="mi">1</span>
       messageLimits <span class="ss">{</span>
-        <span class="mi">1</span><span class="p">.</span>email <span class="o">=</span> <span class="mi">2</span>
+        email <span class="o">=</span> <span class="mi">2</span>
       <span class="ss">}</span>
-      restrictErrorChecks <span class="o">=</span>
-      disableErrorCheckFields <span class="o">=</span>
+      restrictErrorChecks <span class="o">=</span> LengthMax<span class="p">,</span>LengthMin<span class="p">,</span>Required<span class="p">,</span>Email
+      disableErrorCheckFields <span class="o">=</span> firstName
+      disableErrorCheckFields <span class="o">=</span> <span class="ss">{</span>
+        firstName <span class="o">=</span> LengthMax<span class="p">,</span>LengthMin
+        email <span class="o">=</span> Required
+      <span class="ss">}</span>
       fields <span class="ss">{</span>
         firstName<span class="p">.</span>errorChecks <span class="ss">{</span>
           lengthMax <span class="ss">{</span>
@@ -213,6 +217,8 @@ validators <span class="ss">{</span>
 <td><div class="line-block">
 <div class="line">Comma separated list containing the field name path to disable <a class="reference internal" href="../ErrorChecks/Index.html#error-checks"><span class="std std-ref">error checks</span></a> for.</div>
 <div class="line">If this is set, all configured <a class="reference internal" href="../ErrorChecks/Index.html#error-checks"><span class="std std-ref">error checks</span></a> will be ignored, these fields.</div>
+<div class="line"><br /></div>
+<div class="line">Or a list containing the field name path as key and a comma separated list of <a class="reference internal" href="../ErrorChecks/Index.html#error-checks"><span class="std std-ref">error checks</span></a> as values.</div>
 </div>
 </td>
 </tr>
@@ -223,7 +229,7 @@ validators <span class="ss">{</span>
 <td><p>False</p></td>
 </tr>
 <tr class="row-even"><td><p><em>Data Type</em></p></td>
-<td><p>String</p></td>
+<td><p>String|Array&lt;String, <a class="reference internal" href="../ErrorChecks/Index.html#error-checks"><span class="std std-ref">Error Checks</span></a>&gt;</p></td>
 </tr>
 <tr class="row-odd"><td><p><em>Default</em></p></td>
 <td><p>Empty String</p></td>

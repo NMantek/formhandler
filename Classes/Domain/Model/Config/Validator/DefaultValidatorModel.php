@@ -38,10 +38,14 @@ use Typoheads\Formhandler\Validator\DefaultValidator;
  *        config {
  *          messageLimit = 1
  *          messageLimits {
- *            1.email = 2
+ *            email = 2
  *          }
- *          restrictErrorChecks =
- *          disableErrorCheckFields =
+ *          restrictErrorChecks = LengthMax,LengthMin,Required,Email
+ *          disableErrorCheckFields = firstName
+ *          disableErrorCheckFields = {
+ *            firstName = LengthMax,LengthMin
+ *            email = Required
+ *          }
  *          fields {
  *            firstName.errorChecks {
  *              lengthMax {
@@ -133,12 +137,14 @@ use Typoheads\Formhandler\Validator\DefaultValidator;
  *   * - **disableErrorCheckFields**
  *     - | Comma separated list containing the field name path to disable :ref:`error checks <Error-Checks>` for.
  *       | If this is set, all configured :ref:`error checks <Error-Checks>` will be ignored, these fields.
+ *       |
+ *       | Or a list containing the field name path as key and a comma separated list of :ref:`error checks <Error-Checks>` as values.
  *   * -
  *     -
  *   * - *Mandatory*
  *     - False
  *   * - *Data Type*
- *     - String
+ *     - String|Array<String, :ref:`Error-Checks`>
  *   * - *Default*
  *     - Empty String
  *
@@ -174,39 +180,32 @@ class DefaultValidatorModel extends AbstractValidatorModel {
   /** @var array<string, int> */
   public readonly array $messageLimits;
 
+  private readonly Utility $utility;
+
   /**
    * @param array<string, mixed> $settings
    */
-  public function __construct(FormModel &$formConfig, array $settings) {
-    $utility = GeneralUtility::makeInstance(Utility::class);
+  public function __construct(FormModel &$formConfig, string $step, array $settings) {
+    $this->utility = GeneralUtility::makeInstance(Utility::class);
 
     foreach (GeneralUtility::trimExplode(',', strval($settings['restrictErrorChecks'] ?? ''), true) as $restrictErrorCheck) {
-      $this->restrictErrorChecks[] = $utility->classString($restrictErrorCheck, '\\Typoheads\\Formhandler\\Validator\\ErrorCheck\\');
+      $this->restrictErrorChecks[] = $this->utility->classString($restrictErrorCheck, '\\Typoheads\\Formhandler\\Validator\\ErrorCheck\\');
     }
 
     if (isset($settings['disableErrorCheckFields'])) {
       if (is_string($settings['disableErrorCheckFields'])) {
         foreach (GeneralUtility::trimExplode(',', $settings['disableErrorCheckFields'], true) as $field) {
-          $formConfig->disableErrorCheckFields[strval($field)] = [];
+          $formConfig->disableErrorCheckFields[$step.'.'.strval($field)] = [];
         }
       } elseif (is_array($settings['disableErrorCheckFields'])) {
-        foreach ($settings['disableErrorCheckFields'] as $field => $errorChecks) {
-          if (empty($errorChecks)) {
-            $formConfig->disableErrorCheckFields[strval($field)] = [];
-
-            continue;
-          }
-          foreach (GeneralUtility::trimExplode(',', $errorChecks, true) as $errorCheck) {
-            $formConfig->disableErrorCheckFields[strval($field)][] = $utility->classString($errorCheck, '\\Typoheads\\Formhandler\\Validator\\ErrorCheck\\');
-          }
-        }
+        $this->disableErrorCheckFields($formConfig, $settings['disableErrorCheckFields'], $step);
       }
     }
 
     $this->messageLimit = intval($settings['messageLimit'] ?? 1);
 
     if (isset($settings['messageLimits']) && is_array($settings['messageLimits'])) {
-      $this->messageLimits = $this->messageLimits($settings['messageLimits']);
+      $this->messageLimits = $this->messageLimits($settings['messageLimits'], $step);
     } else {
       $this->messageLimits = [];
     }
@@ -225,13 +224,31 @@ class DefaultValidatorModel extends AbstractValidatorModel {
     return DefaultValidator::class;
   }
 
+  private function disableErrorCheckFields(FormModel &$formConfig, array $disableErrorCheckFields, string $fieldNamePath): void {
+    $fieldNamePath = $fieldNamePath.'.';
+    foreach ($disableErrorCheckFields as $field => $disableErrorCheck) {
+      if (is_array($disableErrorCheck)) {
+        $this->disableErrorCheckFields($formConfig, $disableErrorCheck, $fieldNamePath.$field);
+      } else {
+        if (empty($disableErrorCheck)) {
+          $formConfig->disableErrorCheckFields[$fieldNamePath.$field] = [];
+
+          continue;
+        }
+        foreach (GeneralUtility::trimExplode(',', $disableErrorCheck, true) as $errorCheck) {
+          $formConfig->disableErrorCheckFields[$fieldNamePath.$field][] = $this->utility->classString($errorCheck, '\\Typoheads\\Formhandler\\Validator\\ErrorCheck\\');
+        }
+      }
+    }
+  }
+
   /**
    * @param array<string, mixed> $messageLimits
    *
    * @return array<string, int>
    */
-  private function messageLimits(array $messageLimits, string $fieldNamePath = ''): array {
-    $fieldNamePath = empty($fieldNamePath) ? $fieldNamePath : $fieldNamePath.'.';
+  private function messageLimits(array $messageLimits, string $fieldNamePath): array {
+    $fieldNamePath = $fieldNamePath.'.';
     $messageLimitFields = [];
     foreach ($messageLimits as $field => $messageLimit) {
       if (is_array($messageLimit)) {

@@ -17,10 +17,14 @@ This is the default :ref:`Validator <Validators>`, it supports all available :re
         config {
           messageLimit = 1
           messageLimits {
-            1.email = 2
+            email = 2
           }
-          restrictErrorChecks =
-          disableErrorCheckFields =
+          restrictErrorChecks = LengthMax,LengthMin,Required,Email
+          disableErrorCheckFields = firstName
+          disableErrorCheckFields = {
+            firstName = LengthMax,LengthMin
+            email = Required
+          }
           fields {
             firstName.errorChecks {
               lengthMax {
@@ -112,12 +116,14 @@ This is the default :ref:`Validator <Validators>`, it supports all available :re
    * - **disableErrorCheckFields**
      - | Comma separated list containing the field name path to disable :ref:`error checks <Error-Checks>` for.
        | If this is set, all configured :ref:`error checks <Error-Checks>` will be ignored, these fields.
+       |
+       | Or a list containing the field name path as key and a comma separated list of :ref:`error checks <Error-Checks>` as values.
    * -
      -
    * - *Mandatory*
      - False
    * - *Data Type*
-     - String
+     - String|Array<String, :ref:`Error-Checks`>
    * - *Default*
      - Empty String
 

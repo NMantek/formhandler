@@ -82,10 +82,14 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
         DefaultValidator {
           model = DefaultValidator
           config {
+            disableErrorCheckFields {
+              customer.screenshot1 = FileRequired,FileCountMax
+              customer.email = Required
+            }
             messageLimit = 1
             messageLimits {
-              1.customer.screenshot1 = 2
-              1.customer.email = 2
+              customer.screenshot1 = 2
+              customer.email = 2
             }
             fields {
               customer.fields {

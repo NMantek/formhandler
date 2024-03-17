@@ -70,7 +70,7 @@ class StepModel {
   /**
    * @param array<string, mixed> $settings
    */
-  public function __construct(FormModel &$formConfig, array $settings, string $templateForm) {
+  public function __construct(FormModel &$formConfig, string $step, array $settings, string $templateForm) {
     $utility = GeneralUtility::makeInstance(Utility::class);
 
     $this->templateForm = strval($settings['templateForm'] ?? $templateForm);
@@ -88,7 +88,7 @@ class StepModel {
       }
 
       /** @var AbstractValidatorModel $validatorModel */
-      $validatorModel = GeneralUtility::makeInstance($utility::classString(strval($validator['model'].'Model'), 'Typoheads\\Formhandler\\Domain\\Model\\Config\\Validator\\'), $formConfig, $validator['config'] ?? []);
+      $validatorModel = GeneralUtility::makeInstance($utility::classString(strval($validator['model'].'Model'), 'Typoheads\\Formhandler\\Domain\\Model\\Config\\Validator\\'), $formConfig, $step, $validator['config'] ?? []);
 
       $validators[] = $validatorModel;
     }

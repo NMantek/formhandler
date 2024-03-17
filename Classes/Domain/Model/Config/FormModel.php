@@ -79,7 +79,7 @@ use Typoheads\Formhandler\Utility\Utility;
  *              config {
  *                messageLimit = 1
  *                messageLimits {
- *                  1.customer.email = 2
+ *                  customer.email = 2
  *                }
  *                fields {
  *                  customer.fields {
@@ -495,8 +495,9 @@ class FormModel {
         if (empty($step) || !is_array($step)) {
           continue;
         }
+        $stepKey = intval($stepKey);
 
-        $this->steps[intval($stepKey)] = GeneralUtility::makeInstance(StepModel::class, $this, $step, $templateForm);
+        $this->steps[$stepKey] = GeneralUtility::makeInstance(StepModel::class, $this, strval($stepKey), $step, $templateForm);
       }
       if (0 == count($this->steps)) {
         $this->steps[1] = GeneralUtility::makeInstance(StepModel::class, [], $templateForm);

@@ -45,7 +45,7 @@ Predefine form settings and make them selectable in plugin record.
               config {
                 messageLimit = 1
                 messageLimits {
-                  1.customer.email = 2
+                  customer.email = 2
                 }
                 fields {
                   customer.fields {
