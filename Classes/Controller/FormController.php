@@ -502,14 +502,7 @@ class FormController extends ActionController {
       ]
     );
 
-    // TODO: Delete me, once done
-    echo $this->view->render();
-
-    // TODO: Delete me, once done
-    exit;
-
-    // TODO: Activate me, once done
-    // return $this->htmlResponse();
+    return $this->htmlResponse();
   }
 
   // TODO: Change return type to new model of Response and Finisher name so headless knows which Finisher returned
