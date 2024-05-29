@@ -336,7 +336,7 @@ class FormModel {
   public MailModel $admin;
 
   /** @var ConditionBlockModel[] */
-  public array $conditionBlocks;
+  public array $conditionBlocks = [];
 
   /** @var array<string, string[]> */
   public array $disableErrorCheckFields = [];
