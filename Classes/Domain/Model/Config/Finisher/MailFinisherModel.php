@@ -12,7 +12,9 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Domain\Model\Config\Finisher;
 
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Typoheads\Formhandler\Finisher\MailFinisher;
+use Typoheads\Formhandler\Utility\Utility;
 
 /** Documentation:Start:Finishers/MailFinisher.rst.
  *
@@ -28,14 +30,113 @@ use Typoheads\Formhandler\Finisher\MailFinisher;
  *Documentation:End
  */
 class MailFinisherModel extends AbstractFinisherModel {
+  /** @var array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} */
+  public readonly array $adminMailConfig;
+
+  public readonly ?string $languageFile;
+
+  public readonly ?string $templateFile;
+
+  /** @var array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} */
+  public readonly array $userMailConfig;
+
+  private Utility $utility;
+
   /**
    * @param array<string, mixed> $settings
    */
-  public function __construct(array $settings) {
+  public function __construct(
+    private readonly array $settings,
+  ) {
+    $this->utility = GeneralUtility::makeInstance(Utility::class);
+
     $this->returns = filter_var($settings['returns'] ?? false, FILTER_VALIDATE_BOOLEAN);
+    $this->languageFile = $settings['languageFile'] ?? null ? strval($settings['languageFile']) : null;
+    $this->templateFile = $settings['templateFile'] ?? null ? strval($settings['templateFile']) : null;
+
+    $this->adminMailConfig = $this->parseEmailTypeSettings(is_array($this->settings['admin']) ? $this->settings['admin'] : []);
+    $this->userMailConfig = $this->parseEmailTypeSettings(is_array($this->settings['user']) ? $this->settings['user'] : []);
   }
 
   public function class(): string {
     return MailFinisher::class;
+  }
+
+  /**
+   * @param array<mixed> $configToParse
+   *
+   * @return array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>}
+   */
+  protected function parseEmailTypeSettings(array $configToParse) {
+    $parsedConfig = [];
+    $optionsToParse = [
+      // send options
+      'toEmail',
+      'subject',
+      'senderEmail',
+      'senderName',
+      'replyToEmail',
+      'replyToName',
+      'ccEmail',
+      'ccName',
+      'bccEmail',
+      'bccName',
+
+      // additional send options
+      'returnPath',
+      'attachments',
+      'embedFiles',
+    ];
+
+    foreach ($optionsToParse as $option) {
+      switch ($option) {
+        case 'embedFiles':
+        case 'attachments':
+          $value = $this->parseFileConfig(isset($configToParse[$option]) && is_array($configToParse[$option]) ? $configToParse[$option] : []);
+
+          break;
+
+        default:
+          // Try to get value from TypoScript config
+          $value = $this->utility->getFieldValue([$option], $configToParse);
+          // The default value should be a string. Nested Values need to be parsed seperately
+          $value = (is_array($value)) ? '' : $value;
+
+          break;
+      }
+
+      $parsedConfig[$option] = $value;
+    }
+
+    return $parsedConfig;
+  }
+
+  /**
+   * @param array<mixed> $fileConfig
+   *
+   * @return array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>
+   */
+  protected function parseFileConfig(array $fileConfig): array {
+    $parsedList = [];
+
+    foreach ($fileConfig as $identifier => $fileOptions) {
+      if (!is_array($fileOptions)) {
+        continue;
+      }
+
+      $fileOrFieldName = $fileOptions['file'] ?? null;
+      $fileMime = $fileOptions['mime'] ?? null;
+      $renameTo = $fileOptions['renameTo'] ?? null;
+
+      if ($fileOrFieldName) {
+        $parsedList[$identifier] = [
+          'fileOrField' => $fileOrFieldName,
+          'mime' => $fileMime,
+          'renameTo' => $renameTo,
+        ];
+      }
+    }
+
+    return $parsedList;
   }
 }
