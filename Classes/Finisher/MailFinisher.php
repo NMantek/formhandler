@@ -12,10 +12,10 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
-use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\FluidEmail;
+use TYPO3\CMS\Core\Mail\Mailer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use Typoheads\Formhandler\Definitions\Severity;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
@@ -44,50 +44,54 @@ class MailFinisher extends AbstractFinisher {
 
     // send usermail
     $this->initMailer($this->finisherConfig->userMailConfig, $this->formConfig->user);
-
-    exit;
   }
 
   /**
+   * Adds attachments to the current email object.
+   * The specifield attachment names can be both direct filepaths and fieldnames for uploaded files.
+   *
    * @param array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}> $attachConfig
    */
   protected function addAttachments(array $attachConfig) {
     $rootPath = Environment::getPublicPath();
 
+    $fileList = [];
     foreach ($attachConfig as $identifier => $attachFile) {
       // check if the given file was uploaded
       $files = $this->getFileFromUploads($attachFile['fileOrField']);
       if ($files) {
         $counter = 0;
         foreach ($files as $file) {
-          $files = [
+          $fileList[] = [
             'path' => $file->temp,
             'name' => ($attachFile['renameTo']) ? $identifier.'_'.$attachFile['renameTo'].$counter++ : $identifier.'_'.$file->name,
             'mime' => $file->type,
           ];
         }
       } else { // wasnt uploaded. Fallback to static file
-        $files = [
+        $fileList[] = [
           'path' => $this->utility->sanitizePath($rootPath.'/'.$attachFile['fileOrField']),
           'name' => $identifier,
           'mime' => $attachFile['mime'],
         ];
       }
+    }
 
-      foreach ($files as $file) {
-        if (file_exists($file['path'])) {
-          $this->emailObject->attachFromPath($file['path'], $file['name'], $file['mime']);
-        } else {
-          $this->formConfig->debugMessage('file_not_found', ["Embed file {$file['name']} with path {$file['path']} not found"], Severity::Info);
-        }
+    foreach ($fileList as $file) {
+      if (file_exists($file['path'])) {
+        $this->emailObject->attachFromPath($file['path'], $file['name'], $file['mime']);
+      } else {
+        $this->formConfig->debugMessage('file_not_found', ["Embed file {$file['name']} with path {$file['path']} not found"], Severity::Info);
       }
     }
   }
 
   /**
+   * Add embeds to the current email object.
+   *
    * @param array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}> $embedConfig
    */
-  protected function addEmbeds(array $embedConfig) {
+  protected function addEmbeds(array $embedConfig): void {
     $rootPath = Environment::getPublicPath();
 
     foreach ($embedConfig as $identifier => $embedFile) {
@@ -103,7 +107,11 @@ class MailFinisher extends AbstractFinisher {
     }
   }
 
-  protected function getAndTrimValueToSet(string $value1, string $value2): false|string {
+  /**
+   * Returns either the first (if not empty) parameter, the only non-empty parameter or an empty string.
+   * Used when only one of two values (or neither) should be used.
+   */
+  protected function getAndTrimValueToSet(string $value1, string $value2): string {
     if (strlen($value1) > 0) {
       return trim($value1);
     }
@@ -111,13 +119,26 @@ class MailFinisher extends AbstractFinisher {
     return trim($value2);
   }
 
-  protected function getEmailAdressFromForm(string $fieldPath) {
+  /**
+   * Returns a valid email address of a given field.
+   *
+   * @return string the email adress. Will be empty if none was found
+   */
+  protected function getEmailAdressFromForm(string $fieldPath): string {
     $fieldPath = array_map('trim', explode('.', $fieldPath));
 
-    return $this->utility->getFieldValue($fieldPath, $this->formConfig->formValues);
+    $fieldValue = $this->utility->getFieldValue($fieldPath, $this->formConfig->formValues);
+    if (!is_array($fieldValue) && GeneralUtility::validEmail(trim($fieldValue))) {
+      return trim($fieldValue);
+    }
+
+    return '';
   }
 
-  protected function getFileFromUploads(string $fieldPath) {
+  /**
+   * @return false|FormUploadFile[]
+   */
+  protected function getFileFromUploads(string $fieldPath): array|false {
     $fieldPath = array_map('trim', explode('.', $fieldPath));
     foreach ($fieldPath as &$fieldPathLink) {
       $fieldPathLink = '['.$fieldPathLink.']';
@@ -131,20 +152,51 @@ class MailFinisher extends AbstractFinisher {
     return false;
   }
 
-  protected function getListOfAdresses(string $finisherConfigMails, string $finisherConfigNames) {
+  /**
+   * Create a array of Addresses given a comma seperated string of emails and names.
+   *
+   * @return Address[]
+   */
+  protected function getListOfAdresses(string $configMails, string $configNames): array {
     $addresses = [];
 
-    $finisherConfigNamesArray = explode(',', $finisherConfigNames);
-    foreach (explode(',', $finisherConfigMails) as $finisherConfigMail) {
-      if (strlen(trim($finisherConfigMail)) < 1) {
+    $finisherConfigNamesArray = explode(',', $configNames);
+    foreach (explode(',', $configMails) as $emailToAdd) {
+      if (strlen(trim($emailToAdd)) < 1) {
         continue;
       }
 
-      $finisherConfigName = array_shift($finisherConfigNamesArray);
-      $addresses[] = new Address(trim($finisherConfigMail), trim($finisherConfigName ?? ''));
+      $emailNameToAdd = array_shift($finisherConfigNamesArray);
+      $addresses[] = new Address(trim($emailToAdd), trim($emailNameToAdd ?? ''));
     }
 
     return $addresses;
+  }
+
+  /**
+   * Get a list of recipient email adresses.
+   *
+   * @param string $recipientAddresses a comma seperated list of fieldnames and/or email adresses
+   *
+   * @return Address[]
+   */
+  protected function getRecipientEmailAdresses(string $recipientAddresses): array {
+    $recipientAddressArray = [];
+
+    $recipientAddresses = array_unique(explode(',', $recipientAddresses));
+    foreach ($recipientAddresses as $emailOrFieldName) {
+      if (GeneralUtility::validEmail($emailOrFieldName)) {
+        $recipientAddressArray[] = new Address($emailOrFieldName);
+      } else {
+        $emailFromField = $this->getEmailAdressFromForm($emailOrFieldName);
+
+        if (strlen($emailFromField) > 0) {
+          $recipientAddressArray[] = new Address($emailFromField);
+        }
+      }
+    }
+
+    return $recipientAddressArray;
   }
 
   /**
@@ -186,9 +238,21 @@ class MailFinisher extends AbstractFinisher {
 
       // attachments
       $this->addAttachments($finisherConfig['attachments']);
+
+      // recipients
+      $toEmailAdresses = $this->getRecipientEmailAdresses($finisherConfig['toEmail'].','.$formConfig->toEmail);
+      $this->emailObject->to(...$toEmailAdresses);
+
+      $this->emailObject->assignMultiple([
+        ...$this->formConfig->formValues,
+        'formValuePrefix' => $this->formConfig->formValuesPrefix,
+      ]);
+
+      // TODO: Assign template and partial rootpaths
+
+      $mailer = GeneralUtility::makeInstance(Mailer::class);
+      $mailer->send($this->emailObject);
     } catch (\Exception $e) {
-      throw $e;
-      // DebuggerUtility::var_dump($e);
       $this->formConfig->debugMessage('error', [$e->getMessage()], Severity::Error);
     }
   }
