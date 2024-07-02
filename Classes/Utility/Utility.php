@@ -264,6 +264,20 @@ class Utility implements SingletonInterface {
     }
   }
 
+  public static function sanitizePath(string $path): string {
+    if ('/' !== substr($path, 0, 1) && ':/' !== substr($path, 1, 2)) {
+      $path = '/'.$path;
+    }
+    if ('/' !== substr($path, strlen($path) - 1) && !strstr($path, '.')) {
+      $path = $path.'/';
+    }
+    while (strstr($path, '//')) {
+      $path = str_replace('//', '/', $path);
+    }
+
+    return $path;
+  }
+
   /**
    * Checking syntax of input email address.
    */
