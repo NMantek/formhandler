@@ -4,8 +4,8 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
   formValuesPrefix = DevExampleForm
   langFileDefault = locallang_example_form.xlf
   templateForm = 
-  templateMailHtml = DevExample/MailHtml
-  templateMailText = DevExample/MailText
+  templateMailHtml = DevExampleForm/MailHtml
+  templateMailText = DevExampleForm/MailText
 
   fileUpload {
     nameCleanUp {
@@ -368,7 +368,47 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
   finishers {
     Mail {
       model = MailFinisher
-    }    
+      config {
+        // settings for either the user oder admin mails
+        user {
+          // Email type specifig way of defining a mail template. This should be the preffered way as you can seperate the admin and user mail
+          // Using the emailType (can be "user" and "admin") variable would alternatively make having both templates in one file possible.
+          templateMailHtml = DevExampleForm/MailHtml
+
+          // overrides
+          senderEmail = test@mail
+
+          // merges with plugin options
+          toEmail = recipient@mail
+          replyToEmail = test1@mail, test2@mail, test3@mail
+          // should be the same amount of names as email addresses, but can be less
+          replyToName = Testmail 1, Testmail 2, Testmail 3
+
+          embedFiles {
+            // the key (file1 or file2) is also the CID used for embedding
+            file1 {
+              file = fileadmin/formhandler/file1.jpg
+              mime = image/jpeg 
+            }
+            file2 {
+              file = fileadmin/formhandler/file2.png
+              mime = image/png
+            }
+          }
+
+          attachments {
+            userupload {
+              file = 1.customer.screenshot1
+              renameTo = user_file
+            }
+            static_file {
+              file = static/file/path.jpg
+              mime = image/jpeg 
+            }
+          }
+        }
+      }
+    }   
     Redirect {
       model = RedirectFinisher
       config {
