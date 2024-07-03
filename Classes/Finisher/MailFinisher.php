@@ -12,11 +12,13 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
+use Psr\Http\Message\RequestInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\FluidEmail;
 use TYPO3\CMS\Core\Mail\Mailer;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Fluid\View\TemplatePaths;
 use Typoheads\Formhandler\Definitions\Severity;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\MailFinisherModel;
@@ -31,9 +33,11 @@ class MailFinisher extends AbstractFinisher {
 
   private FormModel $formConfig;
 
+  private RequestInterface $request;
+
   private Utility $utility;
 
-  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig): void {
+  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, RequestInterface $request): void {
     if (!$finisherConfig instanceof MailFinisherModel) {
       return;
     }
@@ -41,9 +45,11 @@ class MailFinisher extends AbstractFinisher {
 
     $this->formConfig = $formConfig;
     $this->finisherConfig = $finisherConfig;
+    $this->request = $request;
 
     // send usermail
-    $this->initMailer($this->finisherConfig->userMailConfig, $this->formConfig->user);
+    $this->sendMail($this->finisherConfig->userMailConfig, $this->formConfig->user, 'user');
+    $this->sendMail($this->finisherConfig->adminMailConfig, $this->formConfig->admin, 'admin');
   }
 
   /**
@@ -108,7 +114,7 @@ class MailFinisher extends AbstractFinisher {
   }
 
   /**
-   * Returns either the first (if not empty) parameter, the only non-empty parameter or an empty string.
+   * Returns either the first (if both arent empty), the only non-empty parameter or an empty string.
    * Used when only one of two values (or neither) should be used.
    */
   protected function getAndTrimValueToSet(string $value1, string $value2): string {
@@ -200,11 +206,27 @@ class MailFinisher extends AbstractFinisher {
   }
 
   /**
-   * @param array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} $finisherConfig
+   * @param array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} $finisherConfig
    */
-  protected function initMailer(array $finisherConfig, MailModel $formConfig): void {
+  protected function sendMail(array $finisherConfig, MailModel $formConfig, string $mailType): void {
     try {
-      $this->emailObject = GeneralUtility::makeInstance(FluidEmail::class);
+      $path = new TemplatePaths();
+      $fluidRootPaths = $this->utility->getFluidFilePaths();
+      $path->setTemplateRootPaths($fluidRootPaths['templateRootPaths']);
+      $path->setLayoutRootPaths($fluidRootPaths['layoutRootPaths']);
+      $path->setPartialRootPaths($fluidRootPaths['partialRootPaths']);
+      $this->emailObject = GeneralUtility::makeInstance(FluidEmail::class, $path);
+
+      // set mail format
+      $this->emailObject->format('html');
+      // Get Controller & Action from request
+      $this->emailObject->setRequest($this->request);
+      // Default Template
+      // TODO: Add Ability to change/override this Template. Could also be a static file path
+      $this->emailObject->setTemplate('Finishers/MailFinisher');
+      $this->emailObject->assign('mailForm', $this->getAndTrimValueToSet($finisherConfig['templateMailHtml'], $this->formConfig->templateMailHtml));
+      // differentiate user and admin mail by type.
+      $this->emailObject->assign('emailType', $mailType);
 
       // subject
       $this->emailObject->subject($this->getAndTrimValueToSet($finisherConfig['subject'], $formConfig->subject));
@@ -225,6 +247,7 @@ class MailFinisher extends AbstractFinisher {
       $bccAddresses = array_merge($this->getListOfAdresses($finisherConfig['bccEmail'], $finisherConfig['bccName']), $this->getListOfAdresses($formConfig->bccEmail, $formConfig->bccName));
       $this->emailObject->bcc(...$bccAddresses);
 
+      // return path (Mail to recieve non-delivery messages)
       $returnPath = trim($finisherConfig['returnPath']);
       if (0 === strlen($returnPath)) {
         $returnPath = $GLOBALS['TYPO3_CONF_VARS']['MAIL']['defaultMailFromAddress'];
@@ -243,12 +266,11 @@ class MailFinisher extends AbstractFinisher {
       $toEmailAdresses = $this->getRecipientEmailAdresses($finisherConfig['toEmail'].','.$formConfig->toEmail);
       $this->emailObject->to(...$toEmailAdresses);
 
+      // variable assignment
       $this->emailObject->assignMultiple([
         ...$this->formConfig->formValues,
         'formValuePrefix' => $this->formConfig->formValuesPrefix,
       ]);
-
-      // TODO: Assign template and partial rootpaths
 
       $mailer = GeneralUtility::makeInstance(Mailer::class);
       $mailer->send($this->emailObject);
