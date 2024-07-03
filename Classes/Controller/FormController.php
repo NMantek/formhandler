@@ -508,7 +508,7 @@ class FormController extends ActionController {
   // TODO: Change return type to new model of Response and Finisher name so headless knows which Finisher returned
   private function finishers(): ?Response {
     foreach ($this->formConfig->finishers as $finisher) {
-      GeneralUtility::makeInstance($finisher->class())->process($this->formConfig, $finisher);
+      GeneralUtility::makeInstance($finisher->class())->process($this->formConfig, $finisher, $this->request);
       if ($finisher->returns) {
         return $finisher->response;
       }
