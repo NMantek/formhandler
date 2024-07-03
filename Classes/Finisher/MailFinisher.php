@@ -93,7 +93,7 @@ class MailFinisher extends AbstractFinisher {
       if (file_exists($file['path'])) {
         $this->emailObject->attachFromPath($file['path'], $file['name'], $file['mime']);
       } else {
-        $this->formConfig->debugMessage('file_not_found', ["Embed file {$file['name']} with path {$file['path']} not found"], Severity::Info);
+        $this->formConfig->debugMessage('file_not_found', ["Attached file {$file['name']} with path {$file['path']} not found"], Severity::Info);
       }
     }
   }
