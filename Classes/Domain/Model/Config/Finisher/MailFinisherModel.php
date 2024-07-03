@@ -33,10 +33,6 @@ class MailFinisherModel extends AbstractFinisherModel {
   /** @var array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} */
   public readonly array $adminMailConfig;
 
-  public readonly ?string $languageFile;
-
-  public readonly ?string $templateFile;
-
   /** @var array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} */
   public readonly array $userMailConfig;
 
@@ -49,13 +45,9 @@ class MailFinisherModel extends AbstractFinisherModel {
     private readonly array $settings,
   ) {
     $this->utility = GeneralUtility::makeInstance(Utility::class);
-
     $this->returns = filter_var($settings['returns'] ?? false, FILTER_VALIDATE_BOOLEAN);
-    $this->languageFile = $settings['languageFile'] ?? null ? strval($settings['languageFile']) : null;
-    $this->templateFile = $settings['templateFile'] ?? null ? strval($settings['templateFile']) : null;
-
-    $this->adminMailConfig = $this->parseEmailTypeSettings(is_array($this->settings['admin']) ? $this->settings['admin'] : []);
-    $this->userMailConfig = $this->parseEmailTypeSettings(is_array($this->settings['user']) ? $this->settings['user'] : []);
+    $this->adminMailConfig = $this->parseEmailTypeSettings(isset($this->settings['admin']) && is_array($this->settings['admin']) ? $this->settings['admin'] : []);
+    $this->userMailConfig = $this->parseEmailTypeSettings(isset($this->settings['user']) && is_array($this->settings['user']) ? $this->settings['user'] : []);
   }
 
   public function class(): string {
@@ -65,7 +57,7 @@ class MailFinisherModel extends AbstractFinisherModel {
   /**
    * @param array<mixed> $configToParse
    *
-   * @return array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>}
+   * @return array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>}
    */
   protected function parseEmailTypeSettings(array $configToParse) {
     $parsedConfig = [];
@@ -86,6 +78,10 @@ class MailFinisherModel extends AbstractFinisherModel {
       'returnPath',
       'attachments',
       'embedFiles',
+
+      // template options
+      'templateMailHtml',
+      'templateMailText',
     ];
 
     foreach ($optionsToParse as $option) {
