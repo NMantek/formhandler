@@ -19,6 +19,8 @@ use Egulias\EmailValidator\Validation\RFCValidation;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\ConditionBlockModel;
 
@@ -196,6 +198,16 @@ class Utility implements SingletonInterface {
     }
 
     return $formValues[$fieldKey] ?? '';
+  }
+
+  /**
+   * @return array{templateRootPaths: array<int|string, string>, partialRootPaths: array<int|string, string>, layoutRootPaths: array<int|string, string>}
+   */
+  public static function getFluidFilePaths(): array {
+    $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+
+    return $extbaseFrameworkConfiguration['view'];
   }
 
   public static function prepareAndWhereString(string $andWhere): string {
