@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
@@ -25,10 +26,13 @@ use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\MailFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\MailModel;
+use Typoheads\Formhandler\Event\MailFinisherBeforeSendEvent;
 use Typoheads\Formhandler\Utility\Utility;
 
 class MailFinisher extends AbstractFinisher {
   private FluidEmail $emailObject;
+
+  private EventDispatcherInterface $eventDispatcher;
 
   private MailFinisherModel $finisherConfig;
 
@@ -43,6 +47,7 @@ class MailFinisher extends AbstractFinisher {
       return;
     }
     $this->utility = GeneralUtility::makeInstance(Utility::class);
+    $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcherInterface::class);
 
     $this->formConfig = $formConfig;
     $this->finisherConfig = $finisherConfig;
@@ -273,8 +278,17 @@ class MailFinisher extends AbstractFinisher {
         'formValuePrefix' => $this->formConfig->formValuesPrefix,
       ]);
 
+      /** @var MailFinisherBeforeSendEvent $beforeSendEvent */
+      $beforeSendEvent = $this->eventDispatcher->dispatch(new MailFinisherBeforeSendEvent(
+        $this->finisherConfig,
+        $this->formConfig,
+        $this->request,
+        $this->emailObject,
+        $this->formConfig->formValues,
+      ));
+
       $mailer = GeneralUtility::makeInstance(Mailer::class);
-      $mailer->send($this->emailObject);
+      $mailer->send($beforeSendEvent->getEmailObject());
     } catch (\Exception $e) {
       // write to typo3 log
       $logger = GeneralUtility::makeInstance(LoggerInterface::class);
