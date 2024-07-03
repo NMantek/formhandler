@@ -13,6 +13,7 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Finisher;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\FluidEmail;
@@ -275,6 +276,10 @@ class MailFinisher extends AbstractFinisher {
       $mailer = GeneralUtility::makeInstance(Mailer::class);
       $mailer->send($this->emailObject);
     } catch (\Exception $e) {
+      // write to typo3 log
+      $logger = GeneralUtility::makeInstance(LoggerInterface::class);
+      $logger->error($e->getMessage());
+
       $this->formConfig->debugMessage('error', [$e->getMessage()], Severity::Error);
     }
   }
