@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Event;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Mail\FluidEmail;
 use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\MailFinisherModel;
@@ -22,7 +23,7 @@ final class MailFinisherBeforeSendEvent {
   public function __construct(
     private MailFinisherModel $finisherConfig,
     private FormModel $formConfig,
-    private RequestInterface $request,
+    private ServerRequestInterface $request,
     private FluidEmail $emailObject,
     private array $formValues,
   ) {}
@@ -44,7 +45,7 @@ final class MailFinisherBeforeSendEvent {
     return $this->formValues;
   }
 
-  public function getRequest(): RequestInterface {
+  public function getRequest(): ServerRequestInterface {
     return $this->request;
   }
 

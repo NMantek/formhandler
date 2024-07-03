@@ -12,11 +12,11 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\SingletonInterface;
-use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 
 abstract class AbstractFinisher implements SingletonInterface {
-  abstract public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, RequestInterface $request): void;
+  abstract public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, ServerRequestInterface $request): void;
 }

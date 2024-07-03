@@ -13,7 +13,7 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Finisher;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
-use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Core\Environment;
@@ -25,6 +25,7 @@ use Typoheads\Formhandler\Definitions\Severity;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\MailFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
+use Typoheads\Formhandler\Domain\Model\Config\FormUploadFile;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\MailModel;
 use Typoheads\Formhandler\Event\MailFinisherBeforeSendEvent;
 use Typoheads\Formhandler\Utility\Utility;
@@ -32,22 +33,21 @@ use Typoheads\Formhandler\Utility\Utility;
 class MailFinisher extends AbstractFinisher {
   private FluidEmail $emailObject;
 
-  private EventDispatcherInterface $eventDispatcher;
-
   private MailFinisherModel $finisherConfig;
 
   private FormModel $formConfig;
 
-  private RequestInterface $request;
+  private ServerRequestInterface $request;
 
-  private Utility $utility;
+  public function __construct(
+    private readonly EventDispatcherInterface $eventDispatcher,
+    private readonly Utility $utility
+  ) {}
 
-  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, RequestInterface $request): void {
+  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, ServerRequestInterface $request): void {
     if (!$finisherConfig instanceof MailFinisherModel) {
       return;
     }
-    $this->utility = GeneralUtility::makeInstance(Utility::class);
-    $this->eventDispatcher = GeneralUtility::makeInstance(EventDispatcherInterface::class);
 
     $this->formConfig = $formConfig;
     $this->finisherConfig = $finisherConfig;
@@ -64,7 +64,7 @@ class MailFinisher extends AbstractFinisher {
    *
    * @param array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}> $attachConfig
    */
-  protected function addAttachments(array $attachConfig) {
+  protected function addAttachments(array $attachConfig): void {
     $rootPath = Environment::getPublicPath();
 
     $fileList = [];
@@ -157,7 +157,7 @@ class MailFinisher extends AbstractFinisher {
     }
     $fieldPath = implode('', $fieldPath);
 
-    if (isset($this->formConfig->formUploads->files[$fieldPath]) && is_array($this->formConfig->formUploads->files[$fieldPath])) {
+    if (isset($this->formConfig->formUploads->files[$fieldPath])) {
       return $this->formConfig->formUploads->files[$fieldPath];
     }
 
@@ -212,7 +212,7 @@ class MailFinisher extends AbstractFinisher {
   }
 
   /**
-   * @param array{toEmail: string, subject: string, senderEmail: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} $finisherConfig
+   * @param array{toEmail: string, subject: string, senderEmail: string, senderName: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} $finisherConfig
    */
   protected function sendMail(array $finisherConfig, MailModel $formConfig, string $mailType): void {
     try {

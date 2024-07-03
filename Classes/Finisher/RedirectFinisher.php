@@ -12,15 +12,15 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
+use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Http\RedirectResponse;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
-use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\AbstractFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\RedirectFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 
 class RedirectFinisher extends AbstractFinisher {
-  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, RequestInterface $request): void {
+  public function process(FormModel &$formConfig, AbstractFinisherModel &$finisherConfig, ServerRequestInterface $request): void {
     if (!$finisherConfig instanceof RedirectFinisherModel || null === $formConfig->site) {
       return;
     }
