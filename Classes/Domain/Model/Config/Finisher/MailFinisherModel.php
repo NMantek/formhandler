@@ -59,7 +59,7 @@ class MailFinisherModel extends AbstractFinisherModel {
    *
    * @return array{toEmail: string, subject: string, senderEmail: string, senderName: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>}
    */
-  protected function parseEmailTypeSettings(array $configToParse) {
+  protected function parseEmailTypeSettings(array $configToParse): array {
     $parsedConfig = [];
     $optionsToParse = [
       // send options
@@ -96,7 +96,7 @@ class MailFinisherModel extends AbstractFinisherModel {
           // Try to get value from TypoScript config
           $value = $this->utility->getFieldValue([$option], $configToParse);
           // The default value should be a string. Nested Values need to be parsed seperately
-          $value = (is_array($value)) ? '' : $value;
+          $value = (is_array($value)) ? '' : strval($value);
 
           break;
       }
