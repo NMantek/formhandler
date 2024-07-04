@@ -14,7 +14,6 @@ namespace Typoheads\Formhandler\Event;
 
 use Psr\Http\Message\ServerRequestInterface;
 use TYPO3\CMS\Core\Mail\FluidEmail;
-use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Typoheads\Formhandler\Domain\Model\Config\Finisher\MailFinisherModel;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 
@@ -51,22 +50,5 @@ final class MailFinisherBeforeSendEvent {
 
   public function setEmailObject(FluidEmail $emailObject): void {
     $this->emailObject = $emailObject;
-  }
-
-  public function setFinisherConfig(MailFinisherModel $finisherConfig): void {
-    $this->finisherConfig = $finisherConfig;
-  }
-
-  public function setFormConfig(FormModel $formConfig): void {
-    $this->formConfig = $formConfig;
-  }
-
-  /** @param mixed[] $formValues */
-  public function setFormValues(array $formValues): void {
-    $this->formValues = $formValues;
-  }
-
-  public function setRequest(RequestInterface $request): void {
-    $this->request = $request;
   }
 }
