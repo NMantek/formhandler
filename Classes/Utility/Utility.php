@@ -19,6 +19,8 @@ use Egulias\EmailValidator\Validation\RFCValidation;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManager;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\ConditionBlockModel;
 
@@ -198,6 +200,16 @@ class Utility implements SingletonInterface {
     return $formValues[$fieldKey] ?? '';
   }
 
+  /**
+   * @return array{templateRootPaths: array<int|string, string>, partialRootPaths: array<int|string, string>, layoutRootPaths: array<int|string, string>}
+   */
+  public static function getFluidFilePaths(): array {
+    $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
+    $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
+
+    return $extbaseFrameworkConfiguration['view'];
+  }
+
   public static function prepareAndWhereString(string $andWhere): string {
     $andWhere = trim($andWhere);
     if (str_starts_with($andWhere, 'and ') || str_starts_with($andWhere, 'AND ')) {
@@ -262,6 +274,20 @@ class Utility implements SingletonInterface {
         self::removeKeys($value, $removeKeys);
       }
     }
+  }
+
+  public static function sanitizePath(string $path): string {
+    if ('/' !== substr($path, 0, 1) && ':/' !== substr($path, 1, 2)) {
+      $path = '/'.$path;
+    }
+    if ('/' !== substr($path, strlen($path) - 1) && !strstr($path, '.')) {
+      $path = $path.'/';
+    }
+    while (strstr($path, '//')) {
+      $path = str_replace('//', '/', $path);
+    }
+
+    return $path;
   }
 
   /**
