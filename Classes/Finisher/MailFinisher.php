@@ -190,9 +190,10 @@ class MailFinisher extends AbstractFinisher {
    *
    * @param string $recipientAddresses a comma seperated list of fieldnames and/or email adresses
    *
-   * @return Address[]
+   * @return Address[]|false
    */
-  protected function getRecipientEmailAdresses(string $recipientAddresses): array {
+  protected function getRecipientEmailAdresses(string $recipientAddresses): array|false {
+    $recipientAdded = false;
     $recipientAddressArray = [];
 
     $recipientAddresses = array_unique(explode(',', $recipientAddresses));
@@ -203,12 +204,13 @@ class MailFinisher extends AbstractFinisher {
         $emailFromField = $this->getEmailAdressFromForm($emailOrFieldName);
 
         if (strlen($emailFromField) > 0) {
+          $recipientAdded = true;
           $recipientAddressArray[] = new Address($emailFromField);
         }
       }
     }
 
-    return $recipientAddressArray;
+    return ($recipientAdded) ? $recipientAddressArray : false;
   }
 
   /**
@@ -230,15 +232,35 @@ class MailFinisher extends AbstractFinisher {
       // Default Template
       // TODO: Add Ability to change/override this Template. Could also be a static file path
       $this->emailObject->setTemplate('Finishers/MailFinisher');
-      $this->emailObject->assign('mailForm', $this->getAndTrimValueToSet($finisherConfig['templateMailHtml'], $this->formConfig->templateMailHtml));
+      $emailTemplateFile = $this->getAndTrimValueToSet($finisherConfig['templateMailHtml'], $this->formConfig->templateMailHtml);
+      if (strlen($emailTemplateFile) < 1) {
+        $this->formConfig->debugMessage('Mailfinisher: No template found', ["No subject line found for {$mailType} email"], Severity::Info);
+
+        // no template = dont send email of this type
+        return;
+      }
+      $this->emailObject->assign('mailForm', $emailTemplateFile);
       // differentiate user and admin mail by type.
       $this->emailObject->assign('emailType', $mailType);
 
       // subject
+      $subject = $this->getAndTrimValueToSet($finisherConfig['subject'], $formConfig->subject);
+      if (strlen($subject) < 1) {
+        $this->formConfig->debugMessage('Mailfinisher: No subject found', ["No subject line found for {$mailType} email"], Severity::Info);
+
+        // no subject = dont send email of this type
+        return;
+      }
       $this->emailObject->subject($this->getAndTrimValueToSet($finisherConfig['subject'], $formConfig->subject));
 
       // sender address
       $senderAddress = new Address($this->getAndTrimValueToSet($finisherConfig['senderEmail'], $formConfig->senderEmail), $this->getAndTrimValueToSet($finisherConfig['senderName'], $formConfig->senderName));
+      if (strlen($senderAddress->getAddress()) < 1) {
+        // subject and template are set, a mail should be send. Upgrade from info to error
+        $this->formConfig->debugMessage('Mailfinisher: No sender adress found', ["No sender address found for {$mailType} email"], Severity::Error);
+
+        return;
+      }
       $this->emailObject->sender($senderAddress);
 
       // replyTo addresses
@@ -270,6 +292,12 @@ class MailFinisher extends AbstractFinisher {
 
       // recipients
       $toEmailAdresses = $this->getRecipientEmailAdresses($finisherConfig['toEmail'].','.$formConfig->toEmail);
+      if (!$toEmailAdresses) {
+        // subject, template and sender adress are set, a mail should be send. Upgrade from info to error
+        $this->formConfig->debugMessage('Mailfinisher: No recipient adress found', ["No recipient address found for {$mailType} email"], Severity::Error);
+
+        return;
+      }
       $this->emailObject->to(...$toEmailAdresses);
 
       // variable assignment
@@ -294,7 +322,7 @@ class MailFinisher extends AbstractFinisher {
       $logger = GeneralUtility::makeInstance(LoggerInterface::class);
       $logger->error($e->getMessage());
 
-      $this->formConfig->debugMessage('error', [$e->getMessage()], Severity::Error);
+      $this->formConfig->debugMessage('Mailfinisher Error', [$e->getMessage()], Severity::Error);
     }
   }
 }
