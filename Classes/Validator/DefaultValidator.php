@@ -33,8 +33,8 @@ class DefaultValidator extends AbstractValidator {
   /**
    * @param FieldModel[] $fields
    */
-  private function checkFields(FormModel &$formConfig, mixed $formValues, array $fields, string $fieldNameDots, string $fieldNameBrackets): bool {
-    $isValid = true;
+  private function checkFields(FormModel &$formConfig, mixed $formValues, array $fields, string $fieldNameDots, string $fieldNameBrackets, bool $passedIsValid = true): bool {
+    $isValid = $passedIsValid;
 
     foreach ($fields as $field) {
       $fieldNamePathDots = $fieldNameDots.'.'.$field->name;
@@ -74,7 +74,7 @@ class DefaultValidator extends AbstractValidator {
         }
       }
       if (!empty($field->fields)) {
-        $isValid = $this->checkFields($formConfig, $formValue ?? [], $field->fields, $fieldNamePathDots, $fieldNamePathBrackets);
+        $isValid = $this->checkFields($formConfig, $formValue ?? [], $field->fields, $fieldNamePathDots, $fieldNamePathBrackets, $isValid);
       }
     }
 
