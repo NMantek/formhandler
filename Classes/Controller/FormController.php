@@ -402,12 +402,16 @@ class FormController extends ActionController {
       $this->processUploadedFiles();
 
       if ($this->validators()) {
-        // Check for last step before changing step count
-        $isLast = $this->formStepIsLast();
+        // Check if current step is the last one
+        $beforeStepChange = $this->formStepIsLast();
 
         $this->formStepChange();
 
-        if ($isLast) {
+        // Check again after changing the step
+        $afterStepChange = $this->formStepIsLast();
+
+        // check if this really was the final step. Back buttons wont work otherwise
+        if ($beforeStepChange && $afterStepChange) {
           $this->saveInterceptors();
           $this->loggers();
 
