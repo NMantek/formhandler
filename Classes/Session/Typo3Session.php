@@ -137,12 +137,13 @@ class Typo3Session extends AbstractSession {
     return 3600;
   }
 
-  protected function getSessionId(): string {
-    if (array_key_exists('formhandler_session', $_COOKIE)) {
-      $sessionId = $_COOKIE['formhandler_session'];
-    } else {
+  protected function getSessionId() {
+    $frontendUser = $this->request->getAttribute('frontend.user');
+    $sessionId = $frontendUser->getKey('ses', 'formhandler_session');
+
+    if (!$sessionId) {
       $sessionId = GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig);
-      setcookie('formhandler_session', $sessionId);
+      $frontendUser->setKey('ses', 'formhandler_session', $sessionId);
     }
 
     return $sessionId;
