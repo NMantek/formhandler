@@ -139,7 +139,7 @@ class Typo3Session extends AbstractSession {
     if (array_key_exists('formhandler_session', $_COOKIE)) {
       $sessionId = $_COOKIE['formhandler_session'];
     } else {
-      setcookie('formhandler_session', GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig));
+      setcookie('formhandler_session', $sessionId);
     }
 
     return $sessionId;
