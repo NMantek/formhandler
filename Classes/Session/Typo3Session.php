@@ -144,7 +144,7 @@ class Typo3Session extends AbstractSession {
     $frontendUser = $this->request->getAttribute('frontend.user');
     $sessionId = $frontendUser->getKey('ses', 'formhandler_session');
 
-    if (!$sessionId) {
+    if (!$sessionId || !is_string($sessionId) || empty($sessionId)) {
       $sessionId = GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig);
       $frontendUser->setKey('ses', 'formhandler_session', $sessionId);
     }
