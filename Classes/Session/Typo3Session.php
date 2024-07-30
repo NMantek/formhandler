@@ -53,6 +53,9 @@ class Typo3Session extends AbstractSession {
       $this->cache->remove($this->cacheIdentifier);
       $this->cache->remove($this->randomIdIdentifier);
 
+      unset($_COOKIE['formhandler_session']);
+      setcookie('formhandler_session', '', time() - 3600);
+
       $this->started = false;
     }
 
@@ -135,10 +138,10 @@ class Typo3Session extends AbstractSession {
   }
 
   protected function getSessionId(): string {
-    $sessionId = GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig);
     if (array_key_exists('formhandler_session', $_COOKIE)) {
       $sessionId = $_COOKIE['formhandler_session'];
     } else {
+      $sessionId = GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig);
       setcookie('formhandler_session', $sessionId);
     }
 
