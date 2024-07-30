@@ -13,10 +13,13 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Session;
 
 use TYPO3\CMS\Core\SingletonInterface;
+use TYPO3\CMS\Extbase\Mvc\RequestInterface;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
 
 abstract class AbstractSession implements SingletonInterface {
   protected FormModel $formConfig;
+
+  protected RequestInterface $request;
 
   protected bool $started = false;
 
@@ -24,8 +27,9 @@ abstract class AbstractSession implements SingletonInterface {
 
   abstract public function get(string $key): mixed;
 
-  public function init(FormModel &$formConfig): AbstractSession {
+  public function init(FormModel &$formConfig, RequestInterface $request): AbstractSession {
     $this->formConfig = $formConfig;
+    $this->request = $request;
 
     return $this;
   }

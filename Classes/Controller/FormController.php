@@ -529,7 +529,7 @@ class FormController extends ActionController {
 
   private function formSession(): void {
     $this->formConfig->session = GeneralUtility::makeInstance(Typo3Session::class)
-      ->init($this->formConfig)
+      ->init($this->formConfig, $this->request)
       ->start()
     ;
 

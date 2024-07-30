@@ -14,6 +14,7 @@ namespace Typoheads\Formhandler\Session;
 
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use Typoheads\Formhandler\Definitions\FormhandlerExtensionConfig;
 use Typoheads\Formhandler\Utility\Utility;
 
@@ -27,8 +28,7 @@ class Typo3Session extends AbstractSession {
 
   public function __construct(
     private readonly FrontendInterface $cache,
-  ) {
-  }
+  ) {}
 
   public function exists(): bool {
     if (!$this->started) {
@@ -53,6 +53,10 @@ class Typo3Session extends AbstractSession {
       $this->data = [];
       $this->cache->remove($this->cacheIdentifier);
       $this->cache->remove($this->randomIdIdentifier);
+
+      /** @var FrontendUserAuthentication $frontendUser */
+      $frontendUser = $this->request->getAttribute('frontend.user');
+      $frontendUser->setKey('ses', 'formhandler_session', null);
 
       $this->started = false;
     }
@@ -95,7 +99,7 @@ class Typo3Session extends AbstractSession {
       return $this;
     }
 
-    $this->randomIdIdentifier = FormhandlerExtensionConfig::EXTENSION_PLUGIN_SIGNATURE.'_'.$this->formConfig->formId.'_randomId';
+    $this->randomIdIdentifier = FormhandlerExtensionConfig::EXTENSION_PLUGIN_SIGNATURE.'_'.$this->formConfig->formId.'_randomId_'.$this->getSessionId();
 
     if (empty($this->formConfig->randomId)) {
       $randomId = $this->cache->get($this->randomIdIdentifier);
@@ -133,5 +137,18 @@ class Typo3Session extends AbstractSession {
 
   protected function getLifetime(): int {
     return 3600;
+  }
+
+  protected function getSessionId(): string {
+    /** @var FrontendUserAuthentication $frontendUser */
+    $frontendUser = $this->request->getAttribute('frontend.user');
+    $sessionId = $frontendUser->getKey('ses', 'formhandler_session');
+
+    if (!$sessionId || !is_string($sessionId) || empty($sessionId)) {
+      $sessionId = GeneralUtility::makeInstance(Utility::class)::generateRandomId($this->formConfig);
+      $frontendUser->setKey('ses', 'formhandler_session', $sessionId);
+    }
+
+    return $sessionId;
   }
 }
