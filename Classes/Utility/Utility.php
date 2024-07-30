@@ -207,7 +207,11 @@ class Utility implements SingletonInterface {
     $configurationManager = GeneralUtility::makeInstance(ConfigurationManager::class);
     $extbaseFrameworkConfiguration = $configurationManager->getConfiguration(ConfigurationManagerInterface::CONFIGURATION_TYPE_FRAMEWORK);
 
-    return $extbaseFrameworkConfiguration['view'];
+    return [
+      'templateRootPaths' => isset($extbaseFrameworkConfiguration['view']['templateRootPaths']) ? $extbaseFrameworkConfiguration['view']['templateRootPaths'] : [],
+      'layoutRootPaths' => isset($extbaseFrameworkConfiguration['view']['layoutRootPaths']) ? $extbaseFrameworkConfiguration['view']['layoutRootPaths'] : [],
+      'partialRootPaths' => isset($extbaseFrameworkConfiguration['view']['partialRootPaths']) ? $extbaseFrameworkConfiguration['view']['partialRootPaths'] : [],
+    ];
   }
 
   public static function prepareAndWhereString(string $andWhere): string {
