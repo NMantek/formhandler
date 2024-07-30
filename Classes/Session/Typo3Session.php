@@ -53,8 +53,8 @@ class Typo3Session extends AbstractSession {
       $this->cache->remove($this->cacheIdentifier);
       $this->cache->remove($this->randomIdIdentifier);
 
-      unset($_COOKIE['formhandler_session']);
-      setcookie('formhandler_session', '', time() - 3600);
+      $frontendUser = $this->request->getAttribute('frontend.user');
+      $frontendUser->setKey('ses', 'formhandler_session', null);
 
       $this->started = false;
     }
