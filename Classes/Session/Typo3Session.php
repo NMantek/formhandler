@@ -14,6 +14,7 @@ namespace Typoheads\Formhandler\Session;
 
 use TYPO3\CMS\Core\Cache\Frontend\FrontendInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 use Typoheads\Formhandler\Definitions\FormhandlerExtensionConfig;
 use Typoheads\Formhandler\Utility\Utility;
 
@@ -53,6 +54,7 @@ class Typo3Session extends AbstractSession {
       $this->cache->remove($this->cacheIdentifier);
       $this->cache->remove($this->randomIdIdentifier);
 
+      /** @var FrontendUserAuthentication $frontendUser */
       $frontendUser = $this->request->getAttribute('frontend.user');
       $frontendUser->setKey('ses', 'formhandler_session', null);
 
@@ -137,7 +139,8 @@ class Typo3Session extends AbstractSession {
     return 3600;
   }
 
-  protected function getSessionId() {
+  protected function getSessionId(): string {
+    /** @var FrontendUserAuthentication $frontendUser */
     $frontendUser = $this->request->getAttribute('frontend.user');
     $sessionId = $frontendUser->getKey('ses', 'formhandler_session');
 
