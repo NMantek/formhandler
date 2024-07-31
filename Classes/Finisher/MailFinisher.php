@@ -207,7 +207,6 @@ class MailFinisher extends AbstractFinisher {
    * @return Address[]|false
    */
   protected function getRecipientEmailAdresses(string $recipientAddresses): array|false {
-    $recipientAdded = false;
     $recipientAddressArray = [];
 
     $recipientAddresses = array_unique(explode(',', $recipientAddresses));
@@ -218,13 +217,12 @@ class MailFinisher extends AbstractFinisher {
         $emailFromField = $this->getEmailAdressFromForm($emailOrFieldName);
 
         if (strlen($emailFromField) > 0) {
-          $recipientAdded = true;
           $recipientAddressArray[] = new Address($emailFromField);
         }
       }
     }
 
-    return ($recipientAdded) ? $recipientAddressArray : false;
+    return (!empty($recipientAddressArray)) ? $recipientAddressArray : false;
   }
 
   /**
