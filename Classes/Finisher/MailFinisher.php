@@ -241,7 +241,7 @@ class MailFinisher extends AbstractFinisher {
       $matchFound = true;
       $stackedFormValueVariable = $this->formConfig->formValues;
       foreach ($explodedMarker as $singleExplodedMarker) {
-        if (is_array($stackedFormValueVariable) && !array_key_exists($singleExplodedMarker, $stackedFormValueVariable)) {
+        if (!is_array($stackedFormValueVariable) || !array_key_exists($singleExplodedMarker, $stackedFormValueVariable)) {
           $matchFound = false;
 
           break;
