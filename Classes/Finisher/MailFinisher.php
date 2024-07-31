@@ -120,6 +120,20 @@ class MailFinisher extends AbstractFinisher {
   }
 
   /**
+   * Replace all {marker} placeholders with the corresponding formvalue.
+   */
+  protected function fillSubjectMarkers(string $subject): string {
+    preg_match_all('/{(.*?)}/mi', $subject, $marker);
+    $valuesToFill = $this->getValuesForMarker($marker[1]);
+
+    foreach ($marker[0] as $index => $markerToReplace) {
+      $subject = str_replace($markerToReplace, $valuesToFill[$marker[1][$index]], $subject);
+    }
+
+    return $subject;
+  }
+
+  /**
    * Returns either the first (if both arent empty), the only non-empty parameter or an empty string.
    * Used when only one of two values (or neither) should be used.
    */
@@ -214,6 +228,37 @@ class MailFinisher extends AbstractFinisher {
   }
 
   /**
+   * @param array<string> $marker
+   *
+   * @return array<string, string> ["marker" => "value", "marker2" => ""]
+   */
+  protected function getValuesForMarker(array $marker): array {
+    $returnArray = [];
+    foreach ($marker as $singleMarker) {
+      $explodedMarker = explode('.', $singleMarker);
+      $returnArray[$singleMarker] = '';
+
+      $matchFound = true;
+      $stackedFormValueVariable = $this->formConfig->formValues;
+      foreach ($explodedMarker as $singleExplodedMarker) {
+        if (!array_key_exists($singleExplodedMarker, $stackedFormValueVariable)) {
+          $matchFound = false;
+
+          break;
+        }
+
+        $stackedFormValueVariable = $stackedFormValueVariable[$singleExplodedMarker];
+      }
+
+      if ($matchFound) {
+        $returnArray[$singleMarker] = strval($stackedFormValueVariable);
+      }
+    }
+
+    return $returnArray;
+  }
+
+  /**
    * @param array{toEmail: string, subject: string, senderEmail: string, senderName: string, replyToEmail: string, replyToName: string, ccEmail: string, ccName: string, bccEmail: string, bccName: string, returnPath: string, templateMailHtml: string, templateMailText: string, attachments: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>, embedFiles: array<string, array{fileOrField: string, mime: null|string, renameTo: null|string}>} $finisherConfig
    */
   protected function sendMail(array $finisherConfig, MailModel $formConfig, string $mailType): void {
@@ -245,6 +290,7 @@ class MailFinisher extends AbstractFinisher {
 
       // subject
       $subject = $this->getAndTrimValueToSet($finisherConfig['subject'], $formConfig->subject);
+      $subject = $this->fillSubjectMarkers($subject);
       if (strlen($subject) < 1) {
         $this->formConfig->debugMessage('Mailfinisher: No subject found', ["No subject line found for {$mailType} email"], Severity::Info);
 
