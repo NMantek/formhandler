@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Logger;
 
 use Psr\Http\Message\ServerRequestInterface;
-use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\Generic\PersistenceManager;
 use Typoheads\Formhandler\Domain\Model\Config\FormModel;
@@ -29,14 +28,11 @@ class DatabaseLogger extends AbstractLogger {
 
   protected PersistenceManager $persistenceManager;
 
-  protected Random $random;
-
   public function process(FormModel &$formConfig, AbstractLoggerModel &$loggerConfig): void {
     if (!$loggerConfig instanceof DatabaseLoggerModel) {
       return;
     }
 
-    $this->random = GeneralUtility::makeInstance(Random::class);
     $this->logRepository = GeneralUtility::makeInstance(LogRepository::class);
     $this->persistenceManager = GeneralUtility::makeInstance(PersistenceManager::class);
 
