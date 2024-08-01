@@ -12,7 +12,11 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Domain\Model;
 
-class Log extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
+use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
+
+class Log extends AbstractEntity {
+  protected string $formName = '';
+
   protected int $formPageId = 0;
 
   protected string $ip = '';
@@ -24,6 +28,10 @@ class Log extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
   protected string $params = '';
 
   protected string $uniqueHash = '';
+
+  public function getFormName(): string {
+    return $this->formName;
+  }
 
   public function getFormPageId(): int {
     return $this->formPageId;
@@ -47,6 +55,10 @@ class Log extends \TYPO3\CMS\Extbase\DomainObject\AbstractEntity {
 
   public function getUniqueHash(): string {
     return $this->uniqueHash;
+  }
+
+  public function setFormName(string $formName): void {
+    $this->formName = $formName;
   }
 
   public function setFormPageId(int $formPageId): void {
