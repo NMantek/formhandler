@@ -13,6 +13,21 @@
       <trans-unit id="ip" resname="ip">
         <source>IP address</source>
       </trans-unit>
+      <trans-unit id="params" resname="params">
+        <source>Submitted values</source>
+      </trans-unit>
+      <trans-unit id="key_hash" resname="key_hash">
+        <source>Key hash</source>
+      </trans-unit>
+      <trans-unit id="unique_hash" resname="unique_hash">
+        <source>Unique hash</source>
+      </trans-unit>
+      <trans-unit id="is_spam" resname="is_spam">
+        <source>Is spam</source>
+      </trans-unit>
+      <trans-unit id="form_name" resname="form_name">
+        <source>Form name</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

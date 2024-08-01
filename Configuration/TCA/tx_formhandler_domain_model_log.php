@@ -21,12 +21,12 @@ return [
     ],
     'iconfile' => 'EXT:formhandler/Resources/Public/Icons/tx_formhandler_domain_model_log.svg',
     'hideTable' => false,
-    'searchFields' => 'form_page_id, ip',
+    'searchFields' => 'form_page_id, ip, form_name, params, key_hash, unique_hash, is_spam',
   ],
   'types' => [
     '0' => [
       'showitem' => ' 
-        form_page_id, ip,
+        form_page_id, ip, form_name, params, key_hash, unique_hash, is_spam,
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:access, hidden
       ',
     ],
@@ -59,6 +59,47 @@ return [
       'config' => [
         'type' => 'input',
         'readOnly' => true,
+      ],
+    ],
+    'form_name' => [
+      'label' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:form_name',
+      'config' => [
+        'type' => 'input',
+        'readOnly' => true,
+      ],
+    ],
+    'params' => [
+      'label' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:params',
+      'config' => [
+        'type' => 'text',
+        'readOnly' => true,
+      ],
+    ],
+    'key_hash' => [
+      'label' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:key_hash',
+      'config' => [
+        'type' => 'input',
+        'readOnly' => true,
+      ],
+    ],
+    'unique_hash' => [
+      'label' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:unique_hash',
+      'config' => [
+        'type' => 'input',
+        'readOnly' => true,
+      ],
+    ],
+    'is_spam' => [
+      'label' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:is_spam',
+      'config' => [
+        'type' => 'check',
+        'renderType' => 'checkboxToggle',
+        'items' => [
+          [
+            0 => '',
+            1 => '',
+          ],
+        ],
       ],
     ],
   ],
