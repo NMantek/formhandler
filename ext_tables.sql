@@ -7,5 +7,6 @@ CREATE TABLE tx_formhandler_domain_model_log (
 	params mediumtext,
 	is_spam int(11) unsigned DEFAULT '0',
 	key_hash tinytext,
+	form_name tinytext,
 	unique_hash tinytext,
 );
