@@ -17,7 +17,7 @@ return [
         'index',
       ],
     ],
-    // 'inheritNavigationComponentFromMainModule' => false,
-    // 'navigationComponent' => '@typo3/backend/page-tree/page-tree-element-2',
+    'inheritNavigationComponentFromMainModule' => false,
+    'navigationComponent' => '',
   ],
 ];

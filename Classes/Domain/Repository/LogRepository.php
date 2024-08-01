@@ -21,4 +21,11 @@ use Typoheads\Formhandler\Domain\Model\Log;
  * @extends \TYPO3\CMS\Extbase\Persistence\Repository<Log>
  */
 class LogRepository extends Repository {
+  public function getAllEntries() {
+    $query = $this->createQuery();
+
+    $query->getQuerySettings()->setRespectStoragePage(false);
+
+    return $query->execute();
+  }
 }
