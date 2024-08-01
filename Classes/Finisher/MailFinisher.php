@@ -298,7 +298,7 @@ class MailFinisher extends AbstractFinisher {
         // no subject = dont send email of this type
         return;
       }
-      $this->emailObject->subject($this->getAndTrimValueToSet($finisherConfig['subject'], $formConfig->subject));
+      $this->emailObject->subject($subject);
 
       // sender address
       $senderAddress = new Address($this->getAndTrimValueToSet($finisherConfig['senderEmail'], $formConfig->senderEmail), $this->getAndTrimValueToSet($finisherConfig['senderName'], $formConfig->senderName));
