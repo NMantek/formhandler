@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Controller;
 
+use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -27,9 +28,6 @@ use Typoheads\Formhandler\Domain\Repository\LogRepository;
 
 #[Controller]
 final class AdministrationController extends ActionController {
-  /** @var array|QueryResultInterface<Log> */
-  protected array|QueryResultInterface $logEntries;
-
   public function __construct(
     protected readonly ModuleTemplateFactory $moduleTemplateFactory,
     protected readonly IconFactory $iconFactory,
@@ -92,18 +90,18 @@ final class AdministrationController extends ActionController {
     return $this->redirect('index');
   }
 
-  public function indexAction(?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null, int $itemsPerPage = 10): ResponseInterface {
-    $this->logEntries = $this->logRepository->getAllEntries($formPageId, $formName, $ip, $startDate, $endDate);
+  public function indexAction(?int $logPage = null, ?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null, int $itemsPerPage = 10): ResponseInterface {
+    /** @var QueryResultInterface<Log> */
+    $logEntries = $this->logRepository->getAllEntries($formPageId, $formName, $ip, $startDate, $endDate);
 
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-    $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
-    $paginator = new QueryResultPaginator($this->logEntries, $startingPage, $itemsPerPage);
+    $paginator = new QueryResultPaginator($logEntries, $logPage ?? 1, $itemsPerPage);
     $pagination = new SimplePagination($paginator);
 
     $moduleTemplate->assignMultiple([
       'pagination' => $pagination,
       'paginator' => $paginator,
-      'logPage' => $startingPage,
+      'logPage' => $logPage ?? 1,
       'defaultValues' => [
         'formPageId' => $formPageId,
         'ip' => $ip,
@@ -180,6 +178,8 @@ final class AdministrationController extends ActionController {
   }
 
   /**
+   * TODO: add ability to map language files to forms. Fieldkeys like 1.customer.email should get changed to their translation.
+   *
    * @param array<mixed> $formValues
    *
    * @return array<string, string>

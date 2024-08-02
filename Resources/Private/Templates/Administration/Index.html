@@ -2,6 +2,8 @@
   <f:layout name="Module" />
 
   <f:section name="Content">
+    <f:variable name="startDateFormatted" value="{defaultValues.startDate->f:format.date(format: 'H:i d-m-Y')}" />
+    <f:variable name="endDateFormatted" value="{defaultValues.endDate->f:format.date(format: 'H:i d-m-Y')}" />
     <div id="formhandler-module">
       <div class="row">
         <f:form action="index" method="post" controller="Administration" enctype="multipart/form-data">
@@ -20,7 +22,7 @@
           <div class="col col-md-12 form-group">
             <label for="tx_formhandler_logdata_start"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.start" /></label>
             <div class="input-group input-group-sm">
-              <f:form.textfield type="datetime" name="startDate" value="{defaultValues.startDate->f:format.date(format: 'H:i d-m-Y')}" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime',date-offset:'0'}" />
+              <f:form.textfield type="datetime" name="startDate" value="{startDateFormatted}" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime',date-offset:'0'}" />
               <span class="input-group-btn">
                 <button class="btn btn-default" type="button" data-global-event="click" data-action-focus="#tceforms-datetimefield-task_start_row">
                   <core:icon identifier="actions-edit-pick-date" />
@@ -31,7 +33,7 @@
           <div class="col col-md-12 form-group">
             <label for="tx_formhandler_logdata_start"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.end" /></label>
             <div class="input-group input-group-sm">
-              <f:form.textfield type="datetime" name="endDate" value="{defaultValues.endDate->f:format.date(format: 'H:i d-m-Y')}" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime', date-offset:'0'}" />
+              <f:form.textfield type="datetime" name="endDate" value="{endDateFormatted}" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime', date-offset:'0'}" />
               <span class="input-group-btn">
                 <button class="btn btn-default" type="button" data-global-event="click" data-action-focus="#tceforms-datetimefield-task_start_row">
                   <core:icon identifier="actions-edit-pick-date" />
@@ -99,7 +101,7 @@
     <ul class="pagination">
       <f:for each="{pagination.allPageNumbers}" as="page">
         <li class="page-item">
-          <f:link.action arguments="{logPage:page, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: defaultValues.endDate, startDate: defaultValues.startDate}" class="page-link {f:if(condition:'{logPage}=={page}',then:'active')}"> {page} </f:link.action>
+          <f:link.action arguments="{logPage:page, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" class="page-link {f:if(condition:'{logPage}=={page}',then:'active')}"> {page} </f:link.action>
         </li>
       </f:for>
     </ul>
