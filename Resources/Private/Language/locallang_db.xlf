@@ -28,6 +28,18 @@
       <trans-unit id="form_name" resname="form_name">
         <source>Form name</source>
       </trans-unit>
+      <trans-unit id="crdate" resname="crdate">
+        <source>Submission date</source>
+      </trans-unit>
+      <trans-unit id="log_data" resname="log_data">
+        <source>Log data</source>
+      </trans-unit>
+      <trans-unit id="sub_data" resname="sub_data">
+        <source>Submission data</source>
+      </trans-unit>
+      <trans-unit id="sub_values" resname="sub_values">
+        <source>Submitted values</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

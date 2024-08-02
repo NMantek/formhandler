@@ -15,6 +15,11 @@ namespace Typoheads\Formhandler\Domain\Model;
 use TYPO3\CMS\Extbase\DomainObject\AbstractEntity;
 
 class Log extends AbstractEntity {
+  /**
+   * @var \DateTime
+   */
+  protected $crdate;
+
   protected string $formName = '';
 
   protected int $formPageId = 0;
@@ -28,6 +33,10 @@ class Log extends AbstractEntity {
   protected string $params = '';
 
   protected string $uniqueHash = '';
+
+  public function getCrdate() {
+    return $this->crdate;
+  }
 
   public function getFormName(): string {
     return $this->formName;
@@ -55,6 +64,10 @@ class Log extends AbstractEntity {
 
   public function getUniqueHash(): string {
     return $this->uniqueHash;
+  }
+
+  public function setCrdate($crdate): void {
+    $this->crdate = $crdate;
   }
 
   public function setFormName(string $formName): void {

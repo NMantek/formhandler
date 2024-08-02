@@ -32,11 +32,24 @@ final class AdministrationController extends ActionController {
     protected readonly ModuleTemplateFactory $moduleTemplateFactory,
     protected readonly IconFactory $iconFactory,
     protected readonly LogRepository $logRepository,
-  ) {
-    $this->logEntries = $this->logRepository->getAllEntries();
+  ) {}
+
+  public function detailAction(Log $log): ResponseInterface {
+    $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
+    $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+    $moduleTemplate->assignMultiple([
+      'log' => $log,
+      'logPage' => $startingPage,
+      'submittedValues' => $this->prepareFlatArray(unserialize($log->getParams())),
+    ]);
+
+    return $moduleTemplate->renderResponse('Administration/Detail');
   }
 
   public function indexAction(): ResponseInterface {
+    $this->logEntries = $this->logRepository->getAllEntries();
+
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
     $paginator = new QueryResultPaginator($this->logEntries, $startingPage, 2);
@@ -45,8 +58,62 @@ final class AdministrationController extends ActionController {
     $moduleTemplate->assignMultiple([
       'pagination' => $pagination,
       'paginator' => $paginator,
+      'logPage' => $startingPage,
     ]);
 
     return $moduleTemplate->renderResponse('Administration/Index');
+  }
+
+  public function selectFieldsAction(?string $logDataUids = null, string $filetype = ''): ResponseInterface {
+    $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+
+    $logEntries = $this->logRepository->findByUids(array_map('intval', explode(',', $logDataUids)));
+    $fieldsToShow = [
+      'Global fields' => [
+        'ip',
+        'form_name',
+        'submission_date',
+        'form_page_id',
+      ],
+      'Custom fields' => [],
+      'System fields' => [
+        'key_hash',
+        'unique_hash',
+      ],
+    ];
+
+    foreach ($logEntries as $logDataRow) {
+      $params = $this->prepareFlatArray(unserialize($logDataRow->getParams()));
+      $fields = array_keys($params);
+      foreach ($fields as $idx => $rowField) {
+        if (!in_array($rowField, $fieldsToShow['Custom fields'])) {
+          $fieldsToShow['Custom fields'][] = $rowField;
+        }
+      }
+    }
+
+    $moduleTemplate->assignMultiple([
+      'fieldsToShow' => $fieldsToShow,
+    ]);
+
+    return $moduleTemplate->renderResponse('Administration/SelectFields');
+  }
+
+  /**
+   * @param array<mixed> $formValues
+   *
+   * @return array<string, string>
+   */
+  protected function prepareFlatArray(array $formValues, string $passedName = ''): array {
+    $returnArray = [];
+    foreach ($formValues as $formValueKey => $formValueEntry) {
+      if (is_array($formValueEntry)) {
+        $returnArray = array_merge($this->prepareFlatArray($formValueEntry, $passedName.strval($formValueKey).'.'), $returnArray);
+      } else {
+        $returnArray[$passedName.$formValueKey] = strval($formValueEntry);
+      }
+    }
+
+    return $returnArray;
   }
 }
