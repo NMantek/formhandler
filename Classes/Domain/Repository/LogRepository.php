@@ -41,10 +41,39 @@ class LogRepository extends Repository {
     return $query->execute();
   }
 
-  public function getAllEntries(?int $formPageId = null, ?string $formName = null, ?string $ip = null) {
+  public function getAllEntries(?int $formPageId = null, ?string $formName = null, ?string $ip = null, ?string $startDate = null, ?string $endDate = null) {
     $query = $this->createQuery();
-
     $query->getQuerySettings()->setRespectStoragePage(false);
+
+    $directConstraints = [
+      'formPageId' => $formPageId,
+      'formName' => $formName,
+      'ip' => $ip,
+    ];
+
+    $matching = [];
+    foreach ($directConstraints as $fieldName => $constraint) {
+      if (!$constraint) {
+        continue;
+      }
+
+      $matching[] = $query->equals($fieldName, $constraint);
+    }
+
+    if ($startDate) {
+      $time = new \DateTime($startDate);
+      $matching[] = $query->greaterThanOrEqual('crdate', $time->getTimestamp());
+    }
+    if ($endDate) {
+      $time = new \DateTime($endDate);
+      $matching[] = $query->lessThanOrEqual('crdate', $time->getTimestamp());
+    }
+
+    $query->matching(
+      $query->logicalAnd(
+        ...$matching
+      )
+    );
 
     return $query->execute();
   }

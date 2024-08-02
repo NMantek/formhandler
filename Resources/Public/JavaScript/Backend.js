@@ -4,7 +4,7 @@ import '@typo3/backend/input/clearable.js';
 
 const formhandlerBackendContainer = document.querySelector('#formhandler-module');
 
-class MyModule {
+class FormhandlerBackendModule {
   clearableElements = null;
   dateTimePickerElements = null;
 
@@ -82,4 +82,4 @@ class MyModule {
   }
 }
 
-new MyModule();
+new FormhandlerBackendModule();

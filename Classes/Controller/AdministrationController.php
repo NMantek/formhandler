@@ -13,7 +13,6 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Controller;
 
 use GeorgRinger\NumberedPagination\NumberedPagination;
-use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
@@ -94,9 +93,7 @@ final class AdministrationController extends ActionController {
   }
 
   public function indexAction(?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null): ResponseInterface {
-    $this->logEntries = $this->logRepository->getAllEntries();
-
-    DebuggerUtility::var_dump($startDate);
+    $this->logEntries = $this->logRepository->getAllEntries($formPageId, $formName, $ip, $startDate, $endDate);
 
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
@@ -107,6 +104,13 @@ final class AdministrationController extends ActionController {
       'pagination' => $pagination,
       'paginator' => $paginator,
       'logPage' => $startingPage,
+      'defaultValues' => [
+        'formPageId' => $formPageId,
+        'ip' => $ip,
+        'formName' => $formName,
+        'startDate' => $startDate ? new \DateTime($startDate) : null,
+        'endDate' => $endDate ? new \DateTime($endDate) : null,
+      ],
     ]);
 
     return $moduleTemplate->renderResponse('Administration/Index');
