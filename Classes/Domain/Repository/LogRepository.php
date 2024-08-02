@@ -41,7 +41,7 @@ class LogRepository extends Repository {
     return $query->execute();
   }
 
-  public function getAllEntries() {
+  public function getAllEntries(?int $formPageId = null, ?string $formName = null, ?string $ip = null) {
     $query = $this->createQuery();
 
     $query->getQuerySettings()->setRespectStoragePage(false);

@@ -3,29 +3,67 @@
 
   <f:section name="Content">
     <div id="formhandler-module">
-      <div class="col-xs-4 last"></div>
+      <div class="col-xs-4 last">
+        <f:form action="index" method="post" controller="Administration" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_pid"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.form_page_id" /></label>
+            <f:form.textfield id="tx_formhandler_logdata_pid" name="formPageId" class="form-control input-sm"/>
+          </div>
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_ip"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.ip" /></label>
+            <f:form.textfield id="tx_formhandler_logdata_ip" name="ip" class="form-control input-sm"/>
+          </div>
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_formName"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.form_name" /></label>
+            <f:form.textfield id="tx_formhandler_logdata_formName" name="formName" class="form-control input-sm"/>
+          </div>
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_start"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.start" /></label>
+            <div class="input-group input-group-sm">
+              <f:form.textfield type="datetime" name="startDate" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime',date-offset:'0'}" />
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button" data-global-event="click" data-action-focus="#tceforms-datetimefield-task_start_row">
+                  <core:icon identifier="actions-edit-pick-date" />
+                </button>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_start"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.end" /></label>
+            <div class="input-group input-group-sm">
+              <f:form.textfield type="datetime" name="endDate" id="timeRestriction" class="form-control t3js-datetimepicker t3js-clearable" data="{date-type:'datetime',date-offset:'0'}" />
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="button" data-global-event="click" data-action-focus="#tceforms-datetimefield-task_start_row">
+                  <core:icon identifier="actions-edit-pick-date" />
+                </button>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="tx_formhandler_logdata_show"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.show" /></label>
+            <f:form.select id="tx_formhandler_logdata_show" class="form-control" name="show" options="{10:10, 50:50, 100:100, 1000:1000}"/>
+          </div>
+          <f:form.submit value="{f:translate(key: 'LLL:EXT:formhandler/Resources/Private/Language/locallang_be:button.export')}" class="btn btn-primary" />
+        </f:form>
+      </div>
       <div class="row">
         <div class="col-xs-12">
           <div class="table-fit">
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:form_page_id" /></th>
-                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:form_name" /></th>
-                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:crdate" /></th>
-                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_db.xlf:ip" /></th>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:form_page_id" /></th>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:form_name" /></th>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:crdate" /></th>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:ip" /></th>
                   <th></th>
                   <th>
                     <div class="btn-group process-selected-actions" role="group">
-                      <f:form method="post" action="selectFields" id="process-selected-form-export">
-                        <f:form.hidden name="filetype" class="filetype"/>
-                        <f:form.hidden name="logDataUids" class="logDataUids"/>
-                      </f:form>
-                      <a class="btn btn-default select-all" rel="" href="#" title="{f:translate(key: 'label.select-all-rows')}">
+                      <a class="btn btn-default checkAll" rel="" href="#" title="{f:translate(key: 'LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.select-all-rows')}">
                         <core:icon identifier="actions-document-select" />
                       </a>
-                      <a href="#" class="btn btn-default pdf">PDF</a>
-                      <a href="#" class="btn btn-default csv">CSV</a>
+                      <f:link.action action="selectFields" class="btn btn-default massExport disabled" arguments="{logDataUids: 0, filetype: 'PDF'}"> PDF </f:link.action>
+                      <f:link.action action="selectFields" class="btn btn-default massExport" arguments="{logDataUids: 0, filetype: 'csv'}"> CSV </f:link.action>
                     </div>
                   </th>
                 </tr>
@@ -39,12 +77,12 @@
                     <td>{logEntry.ip}</td>
                     <td>
                       <f:link.action action="detail" controller="Administration" class="btn btn-default" arguments="{log: logEntry.uid}"><core:icon identifier="actions-document-view" /></f:link.action>
-                      <f:link.action action="selectFields" class="btn btn-default" arguments="{logDataUids: logEntry.uid, filetype: 'pdf'}"> PDF </f:link.action>
+                      <f:link.action action="selectFields" class="btn btn-default disabled" arguments="{logDataUids: logEntry.uid, filetype: 'pdf'}"> PDF </f:link.action>
                       <f:link.action action="selectFields" class="btn btn-default" arguments="{logDataUids: logEntry.uid, filetype: 'csv'}"> CSV </f:link.action>
                     </td>
                     <td>
                       <label class="btn btn-default btn-checkbox">
-                        <input type="checkbox" name="marked[]" value="{logDataRow.uid}" class="mark-row">
+                        <input type="checkbox" name="marked[]" value="{logEntry.uid}" class="mark-row selectCheckbox">
                         <span class="t3-icon fa"></span>
                       </label>
                     </td>

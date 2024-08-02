@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff version="1.2"
+  xmlns="urn:oasis:names:tc:xliff:document:1.2">
+  <file source-language="en" datatype="plaintext" original="EXT:formhandler/Resources/Private/Language/locallang_be.xlf" date="2023-06-22T11:48:40Z" product-name="formhandler">
+    <header />
+    <body>
+      <trans-unit id="tx_formhandler_domain_model_log" resname="tx_formhandler_domain_model_log">
+        <source>Formhandler Log</source>
+      </trans-unit>
+      <trans-unit id="form_page_id" resname="form_page_id">
+        <source>Form page id</source>
+      </trans-unit>
+      <trans-unit id="ip" resname="ip">
+        <source>IP address</source>
+      </trans-unit>
+      <trans-unit id="params" resname="params">
+        <source>Submitted values</source>
+      </trans-unit>
+      <trans-unit id="key_hash" resname="key_hash">
+        <source>Key hash</source>
+      </trans-unit>
+      <trans-unit id="unique_hash" resname="unique_hash">
+        <source>Unique hash</source>
+      </trans-unit>
+      <trans-unit id="is_spam" resname="is_spam">
+        <source>Is spam</source>
+      </trans-unit>
+      <trans-unit id="form_name" resname="form_name">
+        <source>Form name</source>
+      </trans-unit>
+      <trans-unit id="crdate" resname="crdate">
+        <source>Submission date</source>
+      </trans-unit>
+      <trans-unit id="log_data" resname="log_data">
+        <source>Log data</source>
+      </trans-unit>
+      <trans-unit id="sub_data" resname="sub_data">
+        <source>Submission data</source>
+      </trans-unit>
+      <trans-unit id="sub_values" resname="sub_values">
+        <source>Submitted values</source>
+      </trans-unit>
+      <trans-unit id="button.export" resname="button.export">
+        <source>Export</source>
+      </trans-unit>
+      <trans-unit id="label.select-all-rows" resname="label.select-all-rows">
+        <source>Select all rows</source>
+      </trans-unit>
+      <trans-unit id="label.form_page_id" resname="label.form_page_id">
+        <source>Form page ID</source>
+      </trans-unit>
+      <trans-unit id="label.ip" resname="label.ip">
+        <source>IP Address</source>
+      </trans-unit>
+      <trans-unit id="label.form_name" resname="label.form_name">
+        <source>Form Name</source>
+      </trans-unit>
+      <trans-unit id="label.start" resname="label.start">
+        <source>Start date</source>
+      </trans-unit>
+      <trans-unit id="label.end" resname="label.end">
+        <source>End date</source>
+      </trans-unit>
+      <trans-unit id="label.show" resname="label.show">
+        <source>Items per page</source>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>

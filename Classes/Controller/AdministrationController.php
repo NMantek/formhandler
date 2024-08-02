@@ -13,9 +13,11 @@ declare(strict_types=1);
 namespace Typoheads\Formhandler\Controller;
 
 use GeorgRinger\NumberedPagination\NumberedPagination;
+use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
+use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
@@ -34,7 +36,9 @@ final class AdministrationController extends ActionController {
     protected readonly IconFactory $iconFactory,
     protected readonly LogRepository $logRepository,
     protected readonly PageRenderer $pageRenderer,
-  ) {}
+  ) {
+    $this->pageRenderer->loadJavaScriptModule('@jakota/formhandler/Backend.js');
+  }
 
   public function detailAction(Log $log): ResponseInterface {
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
@@ -49,9 +53,50 @@ final class AdministrationController extends ActionController {
     return $moduleTemplate->renderResponse('Administration/Detail');
   }
 
-  public function indexAction(): ResponseInterface {
+  public function exportAction(?string $logDataUids = null, array $fields = [], string $fileType = ''): ResponseInterface {
+    if (null !== $logDataUids && !empty($fields)) {
+      $logEntries = $this->logRepository->findByUids(array_map('intval', explode(',', $logDataUids)));
+      $exportReadyValueArray = [];
+
+      /** @var Log $logDataRow */
+      foreach ($logEntries as $logDataRow) {
+        $fullExportArray = [];
+
+        $flatDatasetValues = [
+          'ip' => $logDataRow->getIp(),
+          'form_name' => $logDataRow->getFormName(),
+          'submission_date' => $logDataRow->getCrdate()->format('d.m.Y H:i:s'),
+          'form_page_id' => strval($logDataRow->getFormPageId()),
+          'key_hash' => $logDataRow->getKeyHash(),
+          'unique_hash' => $logDataRow->getUniqueHash(),
+        ];
+        $flatUnserialzedValues = $this->prepareFlatArray(unserialize($logDataRow->getParams()));
+
+        foreach ($fields as $fieldToExport) {
+          if (array_key_exists($fieldToExport, $flatDatasetValues)) {
+            $fullExportArray[$fieldToExport] = $flatDatasetValues[$fieldToExport];
+          } elseif (array_key_exists($fieldToExport, $flatUnserialzedValues)) {
+            $fullExportArray[$fieldToExport] = $flatUnserialzedValues[$fieldToExport];
+          } else {
+            $fullExportArray[$fieldToExport] = '';
+          }
+        }
+
+        $exportReadyValueArray[] = $fullExportArray;
+      }
+
+      if ('csv' === $fileType) {
+        $this->arrayToCsvConvert($exportReadyValueArray, $fields);
+      }
+    }
+
+    return $this->redirect('index');
+  }
+
+  public function indexAction(?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null): ResponseInterface {
     $this->logEntries = $this->logRepository->getAllEntries();
-    $this->pageRenderer->loadJavaScriptModule('@vendor/my-extension/test.js');
+
+    DebuggerUtility::var_dump($startDate);
 
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
@@ -97,9 +142,36 @@ final class AdministrationController extends ActionController {
 
     $moduleTemplate->assignMultiple([
       'fieldsToShow' => $fieldsToShow,
+      'fileType' => $filetype,
+      'logDataUids' => $logDataUids,
     ]);
 
     return $moduleTemplate->renderResponse('Administration/SelectFields');
+  }
+
+  /**
+   * @param array<int, array<string, string>> $array
+   * @param array<string>                     $headers
+   */
+  protected function arrayToCsvConvert(array $array, array $headers, string $filename = 'export.csv', string $delimiter = ','): void {
+    if (count($array) < 1 || count($array[0]) !== count($headers)) {
+      return;
+    }
+
+    $csvFile = fopen('php://memory', 'w');
+    fputcsv($csvFile, $headers, $delimiter);
+    foreach ($array as $line) {
+      fputcsv($csvFile, $line, $delimiter);
+    }
+
+    fseek($csvFile, 0);
+    header('Content-Type: text/csv');
+    header('Content-Disposition: attachment; filename="'.$filename.'";');
+    fpassthru($csvFile);
+
+    $response = $this->responseFactory->createResponse(200);
+
+    throw new PropagateResponseException($response);
   }
 
   /**

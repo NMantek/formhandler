@@ -15,7 +15,7 @@ return [
     'extensionName' => FormhandlerExtensionConfig::EXTENSION_TITLE,
     'controllerActions' => [
       AdministrationController::class => [
-        'index', 'detail', 'selectFields',
+        'index', 'detail', 'selectFields', 'export',
       ],
     ],
     'inheritNavigationComponentFromMainModule' => false,
