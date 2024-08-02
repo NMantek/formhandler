@@ -12,6 +12,8 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Domain\Repository;
 
+use TYPO3\CMS\Core\Database\ConnectionPool;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
 use TYPO3\CMS\Extbase\Persistence\Repository;
 use Typoheads\Formhandler\Domain\Model\Log;
@@ -79,5 +81,22 @@ class LogRepository extends Repository {
     );
 
     return $query->execute();
+  }
+
+  /**
+   * @return array<mixed>
+   */
+  public function getAllFormNames(): array {
+    $queryBuilder = GeneralUtility::makeInstance(ConnectionPool::class)->getQueryBuilderForTable('tx_formhandler_domain_model_log');
+
+    $queryBuilder
+      ->select('form_name')
+      ->from('tx_formhandler_domain_model_log')
+      ->groupBy('form_name')
+    ;
+
+    $results = $queryBuilder->executeQuery()->fetchAllAssociativeIndexed();
+
+    return array_keys($results);
   }
 }

@@ -17,7 +17,7 @@
           </div>
           <div class="col col-md-12 form-group">
             <label for="tx_formhandler_logdata_formName"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.form_name" /></label>
-            <f:form.textfield id="tx_formhandler_logdata_formName" name="formName" value="{defaultValues.formName}" class="form-control input-sm"/>
+            <f:form.select id="tx_formhandler_logdata_formName" class="form-control" value="{defaultValues.formName}" name="formName" options="{availableFormNames}"/>
           </div>
           <div class="col col-md-12 form-group">
             <label for="tx_formhandler_logdata_start"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.start" /></label>

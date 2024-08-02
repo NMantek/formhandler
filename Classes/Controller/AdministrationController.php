@@ -125,6 +125,7 @@ final class AdministrationController extends ActionController {
       'pagination' => $pagination,
       'paginator' => $paginator,
       'logPage' => $logPage ?? 1,
+      'availableFormNames' => $this->prepareFormNamesForSelect($this->logRepository->getAllFormNames()),
       'defaultValues' => [
         'formPageId' => $formPageId,
         'ip' => $ip,
@@ -224,6 +225,21 @@ final class AdministrationController extends ActionController {
       } else {
         $returnArray[$passedName.$formValueKey] = strval($formValueEntry);
       }
+    }
+
+    return $returnArray;
+  }
+
+  /**
+   * @param array<mixed, mixed> $formNames
+   *
+   * @return array<mixed>
+   */
+  protected function prepareFormNamesForSelect(array $formNames): array {
+    $returnArray = ['' => ''];
+
+    foreach ($formNames as $formName) {
+      $returnArray[$formName] = $formName;
     }
 
     return $returnArray;
