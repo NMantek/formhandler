@@ -1,7 +1,7 @@
 <?php
 
 return [
-  'dependencies' => ['backend'],
+  'dependencies' => ['backend', 'core'],
   'imports' => [
     '@jakota/formhandler/' => 'EXT:formhandler/Resources/Public/JavaScript/',
   ],
