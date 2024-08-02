@@ -12,7 +12,6 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Controller;
 
-use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
