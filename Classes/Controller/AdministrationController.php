@@ -12,13 +12,13 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Controller;
 
-use GeorgRinger\NumberedPagination\NumberedPagination;
 use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Http\PropagateResponseException;
 use TYPO3\CMS\Core\Imaging\IconFactory;
 use TYPO3\CMS\Core\Page\PageRenderer;
+use TYPO3\CMS\Core\Pagination\SimplePagination;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Pagination\QueryResultPaginator;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -98,7 +98,7 @@ final class AdministrationController extends ActionController {
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
     $paginator = new QueryResultPaginator($this->logEntries, $startingPage, $itemsPerPage);
-    $pagination = new NumberedPagination($paginator);
+    $pagination = new SimplePagination($paginator);
 
     $moduleTemplate->assignMultiple([
       'pagination' => $pagination,

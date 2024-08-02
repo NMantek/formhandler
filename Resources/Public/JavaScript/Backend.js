@@ -2,16 +2,18 @@ import DocumentService from '@typo3/core/document-service.js';
 import DateTimePicker from '@typo3/backend/date-time-picker.js';
 import '@typo3/backend/input/clearable.js';
 
-const formhandlerBackendContainer = document.querySelector('#formhandler-module');
-
 class FormhandlerBackendModule {
   clearableElements = null;
   dateTimePickerElements = null;
+  formhandlerBackendContainer = null;
 
   constructor() {
     DocumentService.ready().then(() => {
-      this.clearableElements = document.querySelectorAll('.t3js-clearable');
-      this.dateTimePickerElements = document.querySelectorAll('.t3js-datetimepicker');
+      this.formhandlerBackendContainer = document.querySelector('#formhandler-module');
+      this.clearableElements = this.formhandlerBackendContainer.querySelectorAll('.t3js-clearable');
+      this.dateTimePickerElements =
+        this.formhandlerBackendContainer.querySelectorAll('.t3js-datetimepicker');
+
       this.initMassExport();
       this.initSelectAllButtons();
       this.initializeClearableElements();
@@ -28,10 +30,7 @@ class FormhandlerBackendModule {
   }
 
   initMassExport() {
-    /**
-     * @type {NodeListOf<HTMLAnchorElement>}
-     */
-    const massExportButtons = formhandlerBackendContainer.querySelectorAll('.massExport');
+    const massExportButtons = this.formhandlerBackendContainer.querySelectorAll('.massExport');
 
     massExportButtons.forEach((exportButton) => {
       const parentTable = exportButton.closest('table');
@@ -39,9 +38,6 @@ class FormhandlerBackendModule {
 
       exportButton.addEventListener('click', (clickEvent) => {
         const selectedCheckboxes = parentTable?.querySelectorAll('.selectCheckbox:checked');
-        /**
-         * @type {Array<string>}
-         */
         const selectedCheckboxesIds = Array.prototype.map.call(
           selectedCheckboxes,
           (selectElement) => {
@@ -62,20 +58,18 @@ class FormhandlerBackendModule {
     /**
      * @type {NodeListOf<HTMLAnchorElement>}
      */
-    const checkAllButtons = formhandlerBackendContainer.querySelectorAll('.checkAll');
+    const checkAllButtons = this.formhandlerBackendContainer.querySelectorAll('.checkAll');
 
     checkAllButtons.forEach((selectAllElement) => {
       const closestTable = selectAllElement.closest('table');
-      /**
-       * @type {NodeListOf<HTMLInputElement>}
-       */
       const checkboxesOfSameTable = closestTable?.querySelectorAll('.selectCheckbox');
 
       selectAllElement.addEventListener('click', (clickEvent) => {
         clickEvent.preventDefault();
+        const hasCheckCheckbox = closestTable?.querySelectorAll('.selectCheckbox:not(:checked)');
 
         checkboxesOfSameTable.forEach((checkboxToCheck) => {
-          checkboxToCheck.checked = !checkboxToCheck.checked;
+          checkboxToCheck.checked = hasCheckCheckbox.length > 0 ? true : false;
         });
       });
     });
