@@ -41,7 +41,10 @@ class LogRepository extends Repository {
     return $query->execute();
   }
 
-  public function getAllEntries(?int $formPageId = null, ?string $formName = null, ?string $ip = null, ?string $startDate = null, ?string $endDate = null) {
+  /**
+   * @return QueryResultInterface<Log>
+   */
+  public function getAllEntries(?int $formPageId = null, ?string $formName = null, ?string $ip = null, ?string $startDate = null, ?string $endDate = null): QueryResultInterface {
     $query = $this->createQuery();
     $query->getQuerySettings()->setRespectStoragePage(false);
 
