@@ -36,8 +36,7 @@ final class AdministrationController extends ActionController {
     $this->pageRenderer->loadJavaScriptModule('@jakota/formhandler/Backend.js');
   }
 
-  public function detailAction(Log $log): ResponseInterface {
-    $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
+  public function detailAction(Log $log, ?int $logPage = null, ?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null, int $itemsPerPage = 10): ResponseInterface {
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
     $serializedArray = unserialize($log->getParams());
@@ -49,8 +48,16 @@ final class AdministrationController extends ActionController {
 
     $moduleTemplate->assignMultiple([
       'log' => $log,
-      'logPage' => $startingPage,
+      'logPage' => $logPage ?? 0,
       'submittedValues' => $this->prepareFlatArray($serializedArray),
+      'indexActionValues' => [
+        'formPageId' => $formPageId,
+        'ip' => $ip,
+        'formName' => $formName,
+        'startDate' => $startDate ? new \DateTime($startDate) : null,
+        'endDate' => $endDate ? new \DateTime($endDate) : null,
+        'itemsPerPage' => $itemsPerPage,
+      ],
     ]);
 
     return $moduleTemplate->renderResponse('Administration/Detail');

@@ -49,7 +49,7 @@
           </div>
         </div>
       </div>
-      <f:link.action action="index" controller="Administration" additionalParams="{logPage: logPage}" class="btn btn-default">Back to list</f:link.action>
+      <f:link.action action="index" controller="Administration" additionalParams="{logPage: logPage, itemsPerPage: indexActionValues.itemsPerPage, ip: indexActionValues.ip, formPageId: indexActionValues.formPageId, formName: indexActionValues.formName, endDate: indexActionValues.endDate, startDate: indexActionValues.startDate}" class="btn btn-default">Back to list</f:link.action>
     </div>
   </f:section>
 </html>
