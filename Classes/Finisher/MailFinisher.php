@@ -212,6 +212,8 @@ class MailFinisher extends AbstractFinisher {
 
     $recipientAddresses = array_unique(explode(',', $recipientAddresses));
     foreach ($recipientAddresses as $emailOrFieldName) {
+      $emailOrFieldName = trim($emailOrFieldName);
+
       if (GeneralUtility::validEmail($emailOrFieldName)) {
         $recipientAdded = true;
         $recipientAddressArray[] = new Address($emailOrFieldName);
