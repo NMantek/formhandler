@@ -196,6 +196,11 @@ final class AdministrationController extends ActionController {
     if ($csvFile) {
       fputcsv($csvFile, $headers, $delimiter);
       foreach ($array as $line) {
+        // remove linebreaks
+        $line = array_map(function ($field) {
+          return str_replace(["\r", "\n"], '', $field);
+        }, $line);
+
         fputcsv($csvFile, $line, $delimiter);
       }
 
@@ -236,7 +241,7 @@ final class AdministrationController extends ActionController {
    * @return array<mixed>
    */
   protected function prepareFormNamesForSelect(array $formNames): array {
-    $returnArray = ['' => ''];
+    $returnArray = ['' => null];
 
     foreach ($formNames as $formName) {
       $returnArray[$formName] = $formName;
