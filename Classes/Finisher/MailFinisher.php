@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace Typoheads\Formhandler\Finisher;
 
+use JAKOTA\Typo3ToolBox\Utility\DebuggerUtility;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
@@ -54,7 +55,7 @@ class MailFinisher extends AbstractFinisher {
     $this->request = $request;
 
     // send usermail
-    $this->sendMail($this->finisherConfig->userMailConfig, $this->formConfig->user, 'user');
+    // $this->sendMail($this->finisherConfig->userMailConfig, $this->formConfig->user, 'user');
     $this->sendMail($this->finisherConfig->adminMailConfig, $this->formConfig->admin, 'admin');
   }
 
@@ -211,7 +212,11 @@ class MailFinisher extends AbstractFinisher {
     $recipientAddressArray = [];
 
     $recipientAddresses = array_unique(explode(',', $recipientAddresses));
+
+    DebuggerUtility::var_dump($recipientAddresses);
+
     foreach ($recipientAddresses as $emailOrFieldName) {
+      $emailOrFieldName = trim($emailOrFieldName);
       if (GeneralUtility::validEmail($emailOrFieldName)) {
         $recipientAdded = true;
         $recipientAddressArray[] = new Address($emailOrFieldName);
@@ -224,6 +229,10 @@ class MailFinisher extends AbstractFinisher {
         }
       }
     }
+
+    DebuggerUtility::var_dump($recipientAddressArray);
+
+    exit;
 
     return ($recipientAdded) ? $recipientAddressArray : false;
   }
