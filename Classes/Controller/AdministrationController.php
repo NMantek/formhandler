@@ -40,15 +40,25 @@ final class AdministrationController extends ActionController {
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
+    $serializedArray = unserialize($log->getParams());
+    // fallback. Use empty array in case the serialized data is invalid
+    // TODO: add better error handling. Maybe exit & display error?
+    if (!is_array($serializedArray)) {
+      $serializedArray = [];
+    }
+
     $moduleTemplate->assignMultiple([
       'log' => $log,
       'logPage' => $startingPage,
-      'submittedValues' => $this->prepareFlatArray(unserialize($log->getParams())),
+      'submittedValues' => $this->prepareFlatArray($serializedArray),
     ]);
 
     return $moduleTemplate->renderResponse('Administration/Detail');
   }
 
+  /**
+   * @param array<string> $fields
+   */
   public function exportAction(?string $logDataUids = null, array $fields = [], string $fileType = ''): ResponseInterface {
     if (null !== $logDataUids && !empty($fields)) {
       $logEntries = $this->logRepository->findByUids(array_map('intval', explode(',', $logDataUids)));
@@ -66,7 +76,14 @@ final class AdministrationController extends ActionController {
           'key_hash' => $logDataRow->getKeyHash(),
           'unique_hash' => $logDataRow->getUniqueHash(),
         ];
-        $flatUnserialzedValues = $this->prepareFlatArray(unserialize($logDataRow->getParams()));
+
+        $serializedArray = unserialize($logDataRow->getParams());
+        // fallback. Use empty array in case the serialized data is invalid
+        // TODO: add better error handling. Maybe exit & display error?
+        if (!is_array($serializedArray)) {
+          $serializedArray = [];
+        }
+        $flatUnserialzedValues = $this->prepareFlatArray($serializedArray);
 
         foreach ($fields as $fieldToExport) {
           if (array_key_exists($fieldToExport, $flatDatasetValues)) {
@@ -117,7 +134,7 @@ final class AdministrationController extends ActionController {
   public function selectFieldsAction(?string $logDataUids = null, string $filetype = ''): ResponseInterface {
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
 
-    $logEntries = $this->logRepository->findByUids(array_map('intval', explode(',', $logDataUids)));
+    $logEntries = $this->logRepository->findByUids(array_map('intval', explode(',', $logDataUids ?? '')));
     $fieldsToShow = [
       'Global fields' => [
         'ip',
@@ -133,7 +150,14 @@ final class AdministrationController extends ActionController {
     ];
 
     foreach ($logEntries as $logDataRow) {
-      $params = $this->prepareFlatArray(unserialize($logDataRow->getParams()));
+      $serializedArray = unserialize($logDataRow->getParams());
+      // fallback. Use empty array in case the serialized data is invalid
+      // TODO: add better error handling. Maybe exit & display error?
+      if (!is_array($serializedArray)) {
+        $serializedArray = [];
+      }
+
+      $params = $this->prepareFlatArray($serializedArray);
       $fields = array_keys($params);
       foreach ($fields as $idx => $rowField) {
         if (!in_array($rowField, $fieldsToShow['Custom fields'])) {
@@ -161,15 +185,17 @@ final class AdministrationController extends ActionController {
     }
 
     $csvFile = fopen('php://memory', 'w');
-    fputcsv($csvFile, $headers, $delimiter);
-    foreach ($array as $line) {
-      fputcsv($csvFile, $line, $delimiter);
-    }
+    if ($csvFile) {
+      fputcsv($csvFile, $headers, $delimiter);
+      foreach ($array as $line) {
+        fputcsv($csvFile, $line, $delimiter);
+      }
 
-    fseek($csvFile, 0);
-    header('Content-Type: text/csv');
-    header('Content-Disposition: attachment; filename="'.$filename.'";');
-    fpassthru($csvFile);
+      fseek($csvFile, 0);
+      header('Content-Type: text/csv');
+      header('Content-Disposition: attachment; filename="'.$filename.'";');
+      fpassthru($csvFile);
+    }
 
     $response = $this->responseFactory->createResponse(200);
 
