@@ -1,0 +1,42 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+  <f:layout name="Module" />
+
+  <f:section name="Content">
+    <f:for each="{fieldsToShow}" as="fieldValues" key="fieldGroupName">
+      <div class="row">
+        <div class="col-xs-12">
+          <div class="table-fit">
+            <table class="table table-striped table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <a class="btn btn-default checkAll select-all" rel="" href="#" title="{f:translate(key: 'label.select-all-rows')}">
+                      <core:icon identifier="actions-document-select" />
+                    </a>
+                  </th>
+                  <th style="width: 99%">{fieldGroupName}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <f:for each="{fieldValues}" as="field">
+                  <tr>
+                    <td>
+                      <label class="btn btn-default btn-checkbox">
+                        <f:form.checkbox id="tx_formhandler_logdata_{field}" name="fields[]" value="{field}" />
+                        <span class="t3-icon fa"></span>
+                      </label>
+                    </td>
+                    <td><label for="tx_formhandler_logdata_{field}">{field}</label></td>
+                  </tr>
+                </f:for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </f:for>
+    <f:comment>
+      <f:be.pageRenderer pageTitle="title" includeJsFiles="{0: '{f:uri.resource(path:\'JavaScript/test.js\')}'}" />
+    </f:comment>
+  </f:section>
+</html>

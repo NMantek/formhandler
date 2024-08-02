@@ -17,6 +17,7 @@ use Psr\Http\Message\ResponseInterface;
 use TYPO3\CMS\Backend\Attribute\Controller;
 use TYPO3\CMS\Backend\Template\ModuleTemplateFactory;
 use TYPO3\CMS\Core\Imaging\IconFactory;
+use TYPO3\CMS\Core\Page\PageRenderer;
 use TYPO3\CMS\Extbase\Mvc\Controller\ActionController;
 use TYPO3\CMS\Extbase\Pagination\QueryResultPaginator;
 use TYPO3\CMS\Extbase\Persistence\QueryResultInterface;
@@ -32,6 +33,7 @@ final class AdministrationController extends ActionController {
     protected readonly ModuleTemplateFactory $moduleTemplateFactory,
     protected readonly IconFactory $iconFactory,
     protected readonly LogRepository $logRepository,
+    protected readonly PageRenderer $pageRenderer,
   ) {}
 
   public function detailAction(Log $log): ResponseInterface {
@@ -49,6 +51,7 @@ final class AdministrationController extends ActionController {
 
   public function indexAction(): ResponseInterface {
     $this->logEntries = $this->logRepository->getAllEntries();
+    $this->pageRenderer->loadJavaScriptModule('@vendor/my-extension/test.js');
 
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
