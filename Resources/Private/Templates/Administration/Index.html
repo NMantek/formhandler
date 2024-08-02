@@ -41,7 +41,7 @@
           </div>
           <div class="form-group">
             <label for="tx_formhandler_logdata_show"><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:label.show" /></label>
-            <f:form.select id="tx_formhandler_logdata_show" class="form-control" name="show" options="{10:10, 50:50, 100:100, 1000:1000}"/>
+            <f:form.select id="tx_formhandler_logdata_show" class="form-control" value="{defaultValues.itemsPerPage}" name="itemsPerPage" options="{10:10, 50:50, 100:100, 1000:1000}"/>
           </div>
           <f:form.submit value="Filter" class="btn btn-primary" />
         </f:form>

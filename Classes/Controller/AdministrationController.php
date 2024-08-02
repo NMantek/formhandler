@@ -92,12 +92,12 @@ final class AdministrationController extends ActionController {
     return $this->redirect('index');
   }
 
-  public function indexAction(?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null): ResponseInterface {
+  public function indexAction(?int $formPageId = null, ?string $ip = null, ?string $formName = null, ?string $startDate = null, ?string $endDate = null, int $itemsPerPage = 10): ResponseInterface {
     $this->logEntries = $this->logRepository->getAllEntries($formPageId, $formName, $ip, $startDate, $endDate);
 
     $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
     $startingPage = isset($this->request->getQueryParams()['logPage']) ? intval($this->request->getQueryParams()['logPage']) : 1;
-    $paginator = new QueryResultPaginator($this->logEntries, $startingPage, 2);
+    $paginator = new QueryResultPaginator($this->logEntries, $startingPage, $itemsPerPage);
     $pagination = new NumberedPagination($paginator);
 
     $moduleTemplate->assignMultiple([
@@ -110,6 +110,7 @@ final class AdministrationController extends ActionController {
         'formName' => $formName,
         'startDate' => $startDate ? new \DateTime($startDate) : null,
         'endDate' => $endDate ? new \DateTime($endDate) : null,
+        'itemsPerPage' => $itemsPerPage,
       ],
     ]);
 
