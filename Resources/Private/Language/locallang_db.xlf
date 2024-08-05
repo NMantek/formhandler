@@ -28,6 +28,9 @@
       <trans-unit id="form_name" resname="form_name">
         <source>Form name</source>
       </trans-unit>
+      <trans-unit id="crdate" resname="crdate">
+        <source>Submission date</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>

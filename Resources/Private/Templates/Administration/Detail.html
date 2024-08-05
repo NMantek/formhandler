@@ -1,0 +1,55 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+  <f:layout name="Module" />
+
+  <f:section name="Content">
+    <div id="formhandler-module">
+
+      <div class="row">
+        <h1><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:log_data" /></h1>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-xs-12">
+          <h2><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:sub_data" /></h2>
+          <div class="table-fit">
+            <table class="table table-striped table-hover">
+              <tbody>
+                <tr>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:form_page_id" /></th>
+                  <td>{log.formPageId}</td>
+                </tr>
+                <tr>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:crdate" /></th>
+                  <td><f:format.date format="d.m.Y H:i:s">{log.crdate}</f:format.date></td>
+                </tr>
+                <tr>
+                  <th><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:ip" /></th>
+                  <td>{log.ip}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-xs-12">
+          <h2><f:translate key="LLL:EXT:formhandler/Resources/Private/Language/locallang_be.xlf:sub_values" /></h2>
+          <div class="table-fit">
+            <table class="table table-striped table-hover">
+              <tbody>
+                <f:for each="{submittedValues}" as="submitValue" key="submitKey">
+                  <tr>
+                    <th>{submitKey}</th>
+                    <td>{submitValue}</td>
+                  </tr>
+                </f:for>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <f:link.action action="index" controller="Administration" additionalParams="{logPage: logPage, itemsPerPage: indexActionValues.itemsPerPage, ip: indexActionValues.ip, formPageId: indexActionValues.formPageId, formName: indexActionValues.formName, endDate: indexActionValues.endDate, startDate: indexActionValues.startDate}" class="btn btn-default">Back to list</f:link.action>
+    </div>
+  </f:section>
+</html>

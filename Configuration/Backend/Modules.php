@@ -11,13 +11,14 @@ return [
     'access' => 'user',
     'iconIdentifier' => 'formhandler',
     'labels' => 'LLL:EXT:formhandler/Resources/Private/Language/locallang_mod.xlf',
+    'path' => '/module/formhandler/',
     'extensionName' => FormhandlerExtensionConfig::EXTENSION_TITLE,
     'controllerActions' => [
       AdministrationController::class => [
-        'index',
+        'index', 'detail', 'selectFields', 'export',
       ],
     ],
-    // 'inheritNavigationComponentFromMainModule' => false,
-    // 'navigationComponent' => '@typo3/backend/page-tree/page-tree-element-2',
+    'inheritNavigationComponentFromMainModule' => false,
+    'navigationComponent' => '',
   ],
 ];

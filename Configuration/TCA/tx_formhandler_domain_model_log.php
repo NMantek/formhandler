@@ -102,5 +102,10 @@ return [
         ],
       ],
     ],
+    'crdate' => [
+      'config' => [
+        'type' => 'passthrough',
+      ],
+    ],
   ],
 ];
