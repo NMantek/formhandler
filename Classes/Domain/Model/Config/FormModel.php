@@ -335,6 +335,9 @@ use Typoheads\Formhandler\Utility\Utility;
 class FormModel {
   public MailModel $admin;
 
+  /** @var array<string, string> */
+  public array $captchaFieldValues = [];
+
   /** @var ConditionBlockModel[] */
   public array $conditionBlocks = [];
 
