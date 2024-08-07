@@ -412,33 +412,34 @@ class FormController extends ActionController {
 
         // check if this really was the final step. Back buttons wont work otherwise
         if ($beforeStepChange && $afterStepChange) {
-          $this->saveInterceptors();
-          $this->loggers();
+          if ($this->saveInterceptors()) {
+            $this->loggers();
 
-          $response = $this->finishers();
+            $response = $this->finishers();
 
-          // Reset form session
-          $this->formConfig->session->reset()->start();
+            // Reset form session
+            $this->formConfig->session->reset()->start();
 
-          if (null !== $response) {
+            if (null !== $response) {
+              if ('json' == $this->formConfig->responseType) {
+                $this->jsonResponse->success = true;
+
+                // TODO: Use new model to check for Response type and Finisher name so headless knows which Finisher returned
+                if ($response instanceof RedirectResponse) {
+                  $this->jsonResponse->redirectPage = $response->getHeaderLine('location');
+                  $this->jsonResponse->redirectCode = $response->getStatusCode();
+                }
+
+                return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+              }
+
+              return $response;
+            }
             if ('json' == $this->formConfig->responseType) {
               $this->jsonResponse->success = true;
 
-              // TODO: Use new model to check for Response type and Finisher name so headless knows which Finisher returned
-              if ($response instanceof RedirectResponse) {
-                $this->jsonResponse->redirectPage = $response->getHeaderLine('location');
-                $this->jsonResponse->redirectCode = $response->getStatusCode();
-              }
-
               return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
             }
-
-            return $response;
-          }
-          if ('json' == $this->formConfig->responseType) {
-            $this->jsonResponse->success = true;
-
-            return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
           }
         }
       }
@@ -562,6 +563,7 @@ class FormController extends ActionController {
       );
 
       $this->formConfig->formValues = (array) ($this->formConfig->session->get('formValues') ?: []);
+      $this->formConfig->captchaFieldValues = (array) ($this->formConfig->session->get('captchaFieldValues') ?: []);
 
       $formUploads = $this->formConfig->session->get('formUploads');
       if ($formUploads instanceof FormUpload) {
@@ -663,6 +665,12 @@ class FormController extends ActionController {
       key: 'Merge parsedBody with Session',
       data: $this->formConfig->formValues,
     );
+
+    // save captcha values outside of formvalues. Enables better handling
+    if (isset($this->parsedBody['captcha']) && is_array($this->parsedBody['captcha'])) {
+      $this->formConfig->captchaFieldValues = $this->parsedBody['captcha'];
+      $this->formConfig->session->set('captchaFieldValues', $this->formConfig->captchaFieldValues);
+    }
 
     // TODO: Add check if step number is valid
     if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY] ?? false)) {
@@ -914,10 +922,18 @@ class FormController extends ActionController {
     $this->formConfig->session->set('formUploads', $this->formConfig->formUploads);
   }
 
-  private function saveInterceptors(): void {
+  private function saveInterceptors(): bool {
+    $isValid = true;
+
     foreach ($this->formConfig->saveInterceptors as $saveInterceptor) {
-      GeneralUtility::makeInstance($saveInterceptor->class())->process($this->formConfig, $saveInterceptor);
+      if (!GeneralUtility::makeInstance($saveInterceptor->class())->process($this->formConfig, $saveInterceptor)) {
+        $isValid = false;
+      }
     }
+
+    $this->formConfig->session->set('formErrors', $this->formConfig->formErrors);
+
+    return $isValid;
   }
 
   private function validators(): bool {

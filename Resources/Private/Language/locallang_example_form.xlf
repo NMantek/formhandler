@@ -10,6 +10,9 @@
       <trans-unit id="error_FormError_FileTotalSizeMax" resname="error_FormError_FileTotalSizeMax">
         <source>Please reduce file size, you total upload is bigger than the allowed max total size.</source>
       </trans-unit>
+      <trans-unit id="error_FormError_captcha_failed" resname="error_FormError_captcha_failed">
+        <source>The captcha validation failed. Please resubmit your data.</source>
+      </trans-unit>
       <trans-unit id="submit" resname="submit">
         <source>Send</source>
       </trans-unit>
