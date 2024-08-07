@@ -32,8 +32,8 @@ class TurnstileCaptchaInterceptor extends AbstractInterceptor {
 
     $extensionConfiguration = GeneralUtility::makeInstance(ExtensionConfiguration::class)->get('formhandler');
 
-    $turnstilePrivateKey = isset($extensionConfiguration['turnstile']['privatekey']) ? $extensionConfiguration['turnstile']['privatekey'] : '';
-    $turnstileWidgetToken = isset($formConfig->captchaFieldValues['turnstile']) ? $formConfig->captchaFieldValues['turnstile'] : '';
+    $turnstilePrivateKey = $extensionConfiguration['turnstile']['privatekey'] ?? '';
+    $turnstileWidgetToken = $formConfig->captchaFieldValues['turnstile'] ?? '';
 
     try {
       $validationResult = $this->requestClient->request($turnstilePrivateKey, $turnstileWidgetToken, GeneralUtility::getIndpEnv('REMOTE_ADDR'));
