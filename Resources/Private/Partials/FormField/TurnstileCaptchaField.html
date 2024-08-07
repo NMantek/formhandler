@@ -1,0 +1,7 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" xmlns:formhandler="http://typo3.org/ns/Typoheads/Formhandler/ViewHelpers" data-namespace-typo3-fluid="true">
+  <html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+    <div class="cf-turnstile" data-sitekey="{formhandler:getTurnstileSitekey()}" data-theme="light" data-response-field-name="captcha[turnstile]" data-action="{formConfig.formValuesPrefix}"></div>
+
+    <f:asset.script identifier="turnstileCaptcha" src="https://challenges.cloudflare.com/turnstile/v0/api.js" />
+  </html>
+</html>
