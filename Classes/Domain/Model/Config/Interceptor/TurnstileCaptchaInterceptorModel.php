@@ -15,7 +15,7 @@ namespace Typoheads\Formhandler\Domain\Model\Config\Interceptor;
 use Typoheads\Formhandler\Interceptor\TurnstileCaptchaInterceptor;
 
 class TurnstileCaptchaInterceptorModel extends AbstractInterceptorModel {
-  public function __construct() {}
+  public function __construct(array $settings) {}
 
   public function class(): string {
     return TurnstileCaptchaInterceptor::class;
