@@ -390,6 +390,8 @@ class FormController extends ActionController {
 
     $this->mergeParsedBodyWithSession();
 
+    $this->setCaptchaResult();
+
     $this->parseConditionBlocks();
 
     $this->initInterceptors();
@@ -666,12 +668,6 @@ class FormController extends ActionController {
       data: $this->formConfig->formValues,
     );
 
-    // save captcha values outside of formvalues. Enables better handling
-    if (isset($this->parsedBody['captcha']) && is_array($this->parsedBody['captcha'])) {
-      $this->formConfig->captchaFieldValues = $this->parsedBody['captcha'];
-      $this->formConfig->session->set('captchaFieldValues', $this->formConfig->captchaFieldValues);
-    }
-
     // TODO: Add check if step number is valid
     if (is_array($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY] ?? false)) {
       $this->formConfig->step = intval($this->parsedBody[FormhandlerExtensionConfig::EXTENSION_KEY]['step'] ?? 1);
@@ -934,6 +930,15 @@ class FormController extends ActionController {
     $this->formConfig->session->set('formErrors', $this->formConfig->formErrors);
 
     return $isValid;
+  }
+
+  private function setCaptchaResult(): void {
+    if (!isset($this->parsedBody['captcha']) || !is_array($this->parsedBody['captcha'])) {
+      return;
+    }
+
+    $this->formConfig->captchaFieldValues = $this->parsedBody['captcha'];
+    $this->formConfig->session->set('captchaFieldValues', $this->formConfig->captchaFieldValues);
   }
 
   private function validators(): bool {
