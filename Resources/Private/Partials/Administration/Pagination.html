@@ -1,0 +1,33 @@
+<html xmlns:f="http://typo3.org/ns/TYPO3/CMS/Fluid/ViewHelpers" data-namespace-typo3-fluid="true">
+  <ul class="pagination">
+    <li class="page-item">
+      <f:link.action arguments="{logPage: 1, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" style="background-color: var(--bs-gray-300)" class="page-link">
+        <core:icon identifier="actions-chevron-bar-left" />
+      </f:link.action>
+    </li>
+    <li class="page-item">
+      <f:link.action arguments="{logPage: pagination.previousPageNumber, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" style="background-color: var(--bs-gray-300)" class="page-link">
+        <core:icon identifier="actions-chevron-double-left" />
+      </f:link.action>
+    </li>
+
+    <f:for each="{pagination.allPageNumbers}" as="page">
+      <f:if condition="{page} >= {logPage - 3} && {page} <= {logPage + 3}">
+        <li class="page-item">
+          <f:link.action arguments="{logPage: page, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" class="page-link {f:if(condition:'{logPage}=={page}',then:'active')}"> {page} </f:link.action>
+        </li>
+      </f:if>
+    </f:for>
+
+    <li class="page-item">
+      <f:link.action arguments="{logPage: pagination.nextPageNumber, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" style="background-color: var(--bs-gray-300)" class="page-link">
+        <core:icon identifier="actions-chevron-double-right" />
+      </f:link.action>
+    </li>
+    <li class="page-item">
+      <f:link.action arguments="{logPage: pagination.lastPageNumber, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" style="background-color: var(--bs-gray-300)" class="page-link">
+        <core:icon identifier="actions-chevron-bar-right" />
+      </f:link.action>
+    </li>
+  </ul>
+</html>

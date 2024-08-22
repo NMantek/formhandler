@@ -97,13 +97,6 @@
         </div>
       </div>
     </div>
-
-    <ul class="pagination">
-      <f:for each="{pagination.allPageNumbers}" as="page">
-        <li class="page-item">
-          <f:link.action arguments="{logPage: page, itemsPerPage: defaultValues.itemsPerPage, ip: defaultValues.ip, formPageId: defaultValues.formPageId, formName: defaultValues.formName, endDate: endDateFormatted, startDate: startDateFormatted}" class="page-link {f:if(condition:'{logPage}=={page}',then:'active')}"> {page} </f:link.action>
-        </li>
-      </f:for>
-    </ul>
+    <f:render partial="Administration/Pagination" arguments="{_all}" />
   </f:section>
 </html>
