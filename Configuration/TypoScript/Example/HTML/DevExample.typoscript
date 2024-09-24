@@ -373,7 +373,7 @@ plugin.tx_formhandler_form.settings.predefinedForms.devExample {
         user {
           // Email type specifig way of defining a mail template. This should be the preferred way as you can seperate the admin and user mail
           // Using the emailType (can be "user" and "admin") variable would alternatively make having both templates in one file possible.
-          templateMailHtml = DevExampleForm/MailHtml
+          templateMailHtml = DevExampleForm/Mail/MailHtml
 
           // overrides
           senderEmail = test@mail
