@@ -14,7 +14,8 @@ namespace Typoheads\Formhandler\Finisher;
 
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Log\LoggerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Mime\Address;
 use TYPO3\CMS\Core\Core\Environment;
 use TYPO3\CMS\Core\Mail\FluidEmail;
@@ -30,7 +31,9 @@ use Typoheads\Formhandler\Domain\Model\Config\GeneralOptions\MailModel;
 use Typoheads\Formhandler\Event\MailFinisherBeforeSendEvent;
 use Typoheads\Formhandler\Utility\Utility;
 
-class MailFinisher extends AbstractFinisher {
+class MailFinisher extends AbstractFinisher implements LoggerAwareInterface {
+  use LoggerAwareTrait;
+
   private FluidEmail $emailObject;
 
   private MailFinisherModel $finisherConfig;
@@ -367,9 +370,7 @@ class MailFinisher extends AbstractFinisher {
       $mailer = GeneralUtility::makeInstance(Mailer::class);
       $mailer->send($beforeSendEvent->getEmailObject());
     } catch (\Exception $e) {
-      // write to typo3 log
-      $logger = GeneralUtility::makeInstance(LoggerInterface::class);
-      $logger->error($e->getMessage());
+      $this->logger->error($e->getMessage());
 
       $this->formConfig->debugMessage('Mailfinisher Error', [$e->getMessage()], Severity::Error);
     }
