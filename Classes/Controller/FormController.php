@@ -432,7 +432,7 @@ class FormController extends ActionController {
                   $this->jsonResponse->redirectCode = $response->getStatusCode();
                 }
 
-                return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+                return $this->jsonResponse($this->prepareJsonResponse());
               }
 
               return $response;
@@ -440,19 +440,16 @@ class FormController extends ActionController {
             if ('json' == $this->formConfig->responseType) {
               $this->jsonResponse->success = true;
 
-              return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+              return $this->jsonResponse($this->prepareJsonResponse());
             }
           }
         }
       }
 
-      if ('json' == $this->formConfig->responseType) {
-        $this->jsonResponse->fieldsErrors = $this->formConfig->fieldsErrors;
-        $this->jsonResponse->fieldSets = $this->formConfig->fieldSets;
-        $this->jsonResponse->formErrors = $this->formConfig->formErrors;
-        $this->jsonResponse->formValues = $this->formConfig->formValues;
+      $this->prepareFormSets();
 
-        return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+      if ('json' == $this->formConfig->responseType) {
+        return $this->jsonResponse($this->prepareJsonResponse());
       }
 
       return new RedirectResponse(
@@ -463,17 +460,9 @@ class FormController extends ActionController {
     $this->prepareFormSets();
 
     if ('json' == $this->formConfig->responseType) {
-      $this->jsonResponse->steps = $this->formConfig->steps;
-      $this->jsonResponse->fieldsErrors = $this->formConfig->fieldsErrors;
-      $this->jsonResponse->fieldSets = $this->formConfig->fieldSets;
-      $this->jsonResponse->fileUpload = $this->formConfig->fileUpload;
-      $this->jsonResponse->formErrors = $this->formConfig->formErrors;
-      $this->jsonResponse->formUploads = $this->formConfig->formUploads;
-      $this->jsonResponse->formValues = $this->formConfig->formValues;
-
       $this->formConfig->processDebugLog();
 
-      return $this->jsonResponse(json_encode($this->jsonResponse) ?: '{}');
+      return $this->jsonResponse($this->prepareJsonResponse());
     }
 
     foreach ($this->formConfig->steps[$this->formConfig->step]->validators as $validator) {
@@ -649,7 +638,6 @@ class FormController extends ActionController {
       $this->jsonResponse->formValuesPrefix = $this->formConfig->formValuesPrefix;
       $this->jsonResponse->requiredFields = $this->formConfig->requiredFields;
       $this->jsonResponse->selectsOptions = $this->formConfig->selectsOptions;
-      $this->jsonResponse->step = $this->formConfig->step;
     }
   }
 
@@ -734,6 +722,18 @@ class FormController extends ActionController {
     $this->formConfig->fieldSets[] = new FieldSetModel('submitted', 'true');
     $this->formConfig->fieldSets[] = new FieldSetModel('randomId', $this->formConfig->randomId);
     $this->formConfig->fieldSets[] = new FieldSetModel('step', (string) $this->formConfig->step);
+  }
+
+  private function prepareJsonResponse(): string {
+    $this->jsonResponse->fieldsErrors = $this->formConfig->fieldsErrors;
+    $this->jsonResponse->fieldSets = $this->formConfig->fieldSets;
+    $this->jsonResponse->formErrors = $this->formConfig->formErrors;
+    $this->jsonResponse->formValues = $this->formConfig->formValues;
+    $this->jsonResponse->fileUpload = $this->formConfig->fileUpload;
+    $this->jsonResponse->formUploads = $this->formConfig->formUploads;
+    $this->jsonResponse->step = $this->formConfig->step;
+
+    return json_encode($this->jsonResponse) ?: '{}';
   }
 
   /**
