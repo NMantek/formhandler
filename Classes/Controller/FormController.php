@@ -604,10 +604,6 @@ class FormController extends ActionController {
     }
 
     $this->formConfig->session->set('step', $this->formConfig->step);
-
-    if ('json' == $this->formConfig->responseType) {
-      $this->jsonResponse->step = $this->formConfig->step;
-    }
   }
 
   private function formStepIsLast(): bool {
