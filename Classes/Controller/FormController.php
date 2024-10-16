@@ -634,6 +634,7 @@ class FormController extends ActionController {
       $this->jsonResponse->formValuesPrefix = $this->formConfig->formValuesPrefix;
       $this->jsonResponse->requiredFields = $this->formConfig->requiredFields;
       $this->jsonResponse->selectsOptions = $this->formConfig->selectsOptions;
+      $this->jsonResponse->steps = $this->formConfig->steps;
     }
   }
 
