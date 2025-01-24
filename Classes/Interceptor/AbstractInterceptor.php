@@ -31,7 +31,7 @@ abstract class AbstractInterceptor extends AbstractComponent {
    * @param bool $markAsSpam Indicates if this was a blocked SPAM attempt. Will be highlighted in the backend module.
    */
   protected function log(bool $markAsSpam = false): void {
-    $classesArray = $this->settings['loggers.'];
+    $classesArray = $this->settings['loggers.'] ?? null;
     if (isset($classesArray) && is_array($classesArray)) {
       foreach ($classesArray as $idx => $tsConfig) {
         $className = $this->utilityFuncs->getPreparedClassName($tsConfig);

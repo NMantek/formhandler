@@ -162,7 +162,7 @@ class IPBlocking extends AbstractInterceptor {
           $this->utilityFuncs->debugMessage('alert_mail_not_sent', [], 2);
         }
       }
-      if ($this->settings['redirectPage']) {
+      if (isset($this->settings['redirectPage'])) {
         $this->utilityFuncs->doRedirectBasedOnSettings($this->settings, $this->gp);
       } else {
         throw new \Exception($message);
